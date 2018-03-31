@@ -22,7 +22,7 @@ normalised = true;
 
 %calculate_reward_rate(dynamics_and_results);
 % 
-plot_accuracies_and_pcom(dynamics_and_results,is_first_correct,normalised);
+%plot_accuracies_and_pcom(dynamics_and_results,is_first_correct,normalised);
 %plot_x_pattern(dynamics_and_results,normalised);
 % %  
 %plot_confidence_vs_accuracy(dynamics_and_results,normalised);
@@ -1108,9 +1108,6 @@ plot(y_8(1:2:end),'LineStyle','--','Color',[1.0000    0.4961    0.3125],'Display
 xlim([700,2500]);
 xticks(['','',''])
 xticklabels({'','',''})
-if(legends)
-    legend('show');
-end
 if(titles)
    title(['Decision' title_string]);
 end
@@ -1166,6 +1163,7 @@ xlim([700,2500]);
 xticks([700,1500,2500])
 xticklabels({'0','1500', '2500'})
 pubgraph(figure1,18,4,'w');
+
 
 if(export)
 export_path = [figures_path  'new_panel'];
