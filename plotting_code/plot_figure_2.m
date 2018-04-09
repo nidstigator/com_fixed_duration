@@ -223,7 +223,7 @@ end
 
 [times_mean_hand,times_std_hand, times_mean_eye,times_std_eye]=mean_z_std_all_times(dynamics_and_results);
 
-
+coherences = [0,3.2,6.4,12.8,25.6,51.2];
 for i=1:n_of_coherences
     coherence= coherences(i);
     [initiation_time_noncom_correct_mean_gather(i),initiation_time_noncom_correct_std_gather(i)] = ...

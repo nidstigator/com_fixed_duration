@@ -19,21 +19,21 @@ is_first_correct= true;
 normalised = true;
 
 
-% is_motor_correct = true;
-% is_motor_com = false;
-% 
-% [y_1, y_2, y_3, y_4, y_mc_hu, y_mc_lu, y_5, y_6, y_7, y_8] = ...
-%     calculate_mean_activity(dynamics_and_results, 3.2, ...
-%     is_motor_correct, is_motor_com);
-% 
-% [y_1_25, y_2_25,y_3_25, y_4_25, y_mc_hu_25, y_mc_lu_25, y_5_25, y_6_25, y_7_25, y_8_25] = ...
-%     calculate_mean_activity(dynamics_and_results, 51.2, ...
-%     is_motor_correct, is_motor_com);
-% 
-% is_single_trial = false;
-% 
-% 
-% plot_main_panel_modified(dynamics_and_results,y_1,y_2,y_3,y_4,y_5,y_6,y_mc_hu,y_mc_lu,y_7,y_8,y_1_25,y_2_25,y_3_25,y_4_25,y_5_25,y_6_25,y_mc_hu_25,y_mc_lu_25, y_7_25, y_8_25)
+is_motor_correct = true;
+is_motor_com = false;
+
+[y_1, y_2, y_3, y_4, y_mc_hu, y_mc_lu, y_5, y_6, y_7, y_8] = ...
+    calculate_mean_activity(dynamics_and_results, 3.2, ...
+    is_motor_correct, is_motor_com);
+
+[y_1_25, y_2_25,y_3_25, y_4_25, y_mc_hu_25, y_mc_lu_25, y_5_25, y_6_25, y_7_25, y_8_25] = ...
+    calculate_mean_activity(dynamics_and_results, 51.2, ...
+    is_motor_correct, is_motor_com);
+
+is_single_trial = false;
+
+
+plot_main_panel_modified(dynamics_and_results,y_1,y_2,y_3,y_4,y_5,y_6,y_mc_hu,y_mc_lu,y_7,y_8,y_1_25,y_2_25,y_3_25,y_4_25,y_5_25,y_6_25,y_mc_hu_25,y_mc_lu_25, y_7_25, y_8_25)
 
 plot_x_pattern(dynamics_and_results,normalised);
 
@@ -133,10 +133,10 @@ xlabel(x_string);
 pubgraph(figure7,18,4,'w')
 
 
-data_file_name_1=[figures_path 'fig1_d_1.mat'];
-data_file_name_2=[figures_path 'fig1_d_2.mat'];
-data_file_name_csv_1=[figures_path 'fig1_d_1.txt'];
-data_file_name_csv_2=[figures_path 'fig1_d_2.txt'];
+data_file_name_1=[figures_path 'Fig1_d1.mat'];
+data_file_name_2=[figures_path 'Fig1_d2.mat'];
+data_file_name_csv_1=[figures_path 'Fig1_d1.txt'];
+data_file_name_csv_2=[figures_path 'Fig1_d2.txt'];
 header_1 = {'x_fit,y_fit'};
 header_2 = {'x_real,y_real'};
 
@@ -289,8 +289,8 @@ ylabel(y_string);
 pubgraph(figure1,18,4,'w')
 ylim([-1,110]);
 
-data_file_name=[figures_path 'fig1_c.mat'];
-data_file_name_csv=[figures_path 'fig1_c.txt'];
+data_file_name=[figures_path 'Fig1_c.mat'];
+data_file_name_csv=[figures_path 'Fig1_c.txt'];
 header = {'x_correct,x_correct_sem,x_error,x_error_sem'};
 
 fig_1_data = [x_correct_max'*100,x_correct_max_std'*100,x_incorrect_max'*100,x_incorrect_max_std'*100,];
@@ -423,8 +423,8 @@ xticks([700,1500,2500])
 xticklabels({'0','1500', '2500'})
 pubgraph(figure1,18,4,'w');
 
-data_file_name=[figures_path 'fig1b.mat'];
-data_file_name_csv=[figures_path 'fig1b.txt'];
+data_file_name=[figures_path 'Fig1_b.mat'];
+data_file_name_csv=[figures_path 'Fig1_b.txt'];
 header = {'y_1_25','y_2_25','y_3_25','y_4_25','y_5_25','y_5_25','y_6_25','y_7_25','y_8_25','y_mc_hu_25','y_mc_lu_25','y_1','y_2','y_3','y_4','y_5','y_6','y_7','y_8','y_mc_hu','y_mc_lu'};
 
 fig_1_data = [y_1', y_2', y_3', y_4', y_mc_hu', y_mc_lu', y_5', y_6', y_7', y_8',y_1_25', y_2_25',y_3_25', y_4_25', y_mc_hu_25', y_mc_lu_25', y_5_25', y_6_25', y_7_25', y_8_25'];

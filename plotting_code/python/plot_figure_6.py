@@ -29,3 +29,12 @@ plt.rc('legend', fontsize=18)
 ###################################
 
 
+def plot_figure_1():
+    fig1b = pd.read_csv('../../figures_output/Fig1_b.txt', sep=',')
+    fig1c = pd.read_csv('../../figures_output/Fig1_c.txt', sep=',')
+    fig1d1 = pd.read_csv('../../figures_output/Fig1_d1.txt', sep=',')
+    fig1d2 = pd.read_csv('../../figures_output/Fig1_d2.txt', sep=',')
+    print('test')
+
+plot_figure_1()
+
