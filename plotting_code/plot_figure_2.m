@@ -155,10 +155,10 @@ end
 if(titles)
     title(title_string);
 end
-data_file_name_1=[figures_path 'fig2_a_1.mat'];
-data_file_name_2=[figures_path 'fig2_a_2.mat'];
-data_file_name_csv_1=[figures_path 'fig2_a_1.txt'];
-data_file_name_csv_2=[figures_path 'fig2_a_2.txt'];
+data_file_name_1=[figures_path 'Fig2_a1.mat'];
+data_file_name_2=[figures_path 'Fig2_a2.mat'];
+data_file_name_csv_1=[figures_path 'Fig2_a1.txt'];
+data_file_name_csv_2=[figures_path 'Fig2_a2.txt'];
 header_1 = {'pcorrect_x_fit,pcorrect_y_fit'};
 header_2 = {'pcorrect_x_real,pcorrect_y_real'};
 
@@ -185,10 +185,10 @@ dlmwrite(data_file_name_csv_2, fig_1_data_2(1:end,:), '-append') ;
 
 %%% COM save:
 
-data_file_name_1=[figures_path 'fig2_b_1.mat'];
-data_file_name_2=[figures_path 'fig2_b_2.mat'];
-data_file_name_csv_1=[figures_path 'fig2_b_1.txt'];
-data_file_name_csv_2=[figures_path 'fig2_b_2.txt'];
+data_file_name_1=[figures_path 'Fig2_b1.mat'];
+data_file_name_2=[figures_path 'Fig2_b2.mat'];
+data_file_name_csv_1=[figures_path 'Fig2_b1.txt'];
+data_file_name_csv_2=[figures_path 'Fig2_b2.txt'];
 header_1 = {'pcorrect_com_x_fit,pcorrect_com_y_fit'};
 header_2 = {'pcorrect_x_real,pcorrect_y_real'};
 
@@ -291,8 +291,8 @@ end
 if(titles)
     title(title_string);
 end
-data_file_name=[figures_path 'fig2_c.mat'];
-data_file_name_csv=[figures_path 'fig2_c.txt'];
+data_file_name=[figures_path 'Fig2_c.mat'];
+data_file_name_csv=[figures_path 'Fig2_c.txt'];
 header = {'init_z_correct,init_z_correct_sem,init_z_error,init_z_error_sem'};
 
 fig_2c_data = [initiation_time_noncom_correct_mean_gather',...

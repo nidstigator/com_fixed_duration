@@ -55,8 +55,8 @@ mean(lag)
 figure
 histfit(lag,40,'normal')
 
-data_file_name=[figures_path 'fig3_c.mat'];
-data_file_name_csv=[figures_path 'fig3_c.txt'];
+data_file_name=[figures_path 'Fig3_c.mat'];
+data_file_name_csv=[figures_path 'Fig3_c.txt'];
 header = {'lag'};
 
 fig3_c = [lag'];
@@ -159,8 +159,8 @@ savefig(export_path);
 end
 %%%%%%%%
 
-data_file_name=[figures_path 'fig3_ab.mat'];
-data_file_name_csv=[figures_path 'fig3_ab.txt'];
+data_file_name=[figures_path 'Fig3_ab.mat'];
+data_file_name_csv=[figures_path 'Fig3_ab.txt'];
 header = {'p_com_all,p_com_correct,pcom_incorrect'};
 
 fig3_ab_data = [p_com',...
