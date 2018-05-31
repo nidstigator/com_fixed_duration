@@ -228,37 +228,37 @@ for i=1:n_of_coherences
     coherence= coherences(i);
     [initiation_time_noncom_correct_mean_gather(i),initiation_time_noncom_correct_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        true, false, is_first_correct, coupled,times_mean_hand,times_std_hand);
+        true, false, is_first_correct, coupled,times_mean_hand,times_std_hand,false);
     
     [initiation_time_noncom_incorrect_mean_gather(i),initiation_time_noncom_incorrect_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        false, false, is_first_correct, coupled,times_mean_hand,times_std_hand);
+        false, false, is_first_correct, coupled,times_mean_hand,times_std_hand,false);
     
     [initiation_time_com_correct_mean_gather(i),initiation_time_com_correct_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        true, true, is_first_correct, coupled,times_mean_hand,times_std_hand);
+        true, true, is_first_correct, coupled,times_mean_hand,times_std_hand,false);
     
     [initiation_time_com_incorrect_mean_gather(i),initiation_time_com_incorrect_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        false, true, is_first_correct, coupled,times_mean_hand,times_std_hand);
+        false, true, is_first_correct, coupled,times_mean_hand,times_std_hand,false);
         
     
     
     [eye_initiation_time_noncom_correct_mean_gather(i),eye_initiation_time_noncom_correct_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        true, false, is_first_correct, coupled,times_mean_eye,times_std_eye);
+        true, false, is_first_correct, coupled,times_mean_eye,times_std_eye,true);
     
     [eye_initiation_time_noncom_incorrect_mean_gather(i),eye_initiation_time_noncom_incorrect_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        false, false, is_first_correct, coupled,times_mean_eye,times_std_eye);
+        false, false, is_first_correct, coupled,times_mean_eye,times_std_eye,true);
     
     [eye_initiation_time_com_correct_mean_gather(i),eye_initiation_time_com_correct_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        true, true, is_first_correct, coupled,times_mean_eye,times_std_eye);
+        true, true, is_first_correct, coupled,times_mean_eye,times_std_eye,true);
     
     [eye_initiation_time_com_incorrect_mean_gather(i),eye_initiation_time_com_incorrect_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        false, true, is_first_correct, coupled,times_mean_eye,times_std_eye);
+        false, true, is_first_correct, coupled,times_mean_eye,times_std_eye,true);
 end
 
 figure4=figure;
@@ -508,7 +508,7 @@ return;
 end
 
 function [initiation_time_mean,initiation_time_std] = calculate_z_score(dynamics_and_results, coherence, ...
-    is_motor_correct, is_motor_com, is_first_correct, coupled,times_mean,times_std)
+    is_motor_correct, is_motor_com, is_first_correct, coupled,times_mean,times_std,is_eye)
 
 coherences = get_coherence_levels(dynamics_and_results);
 
@@ -548,7 +548,20 @@ if(~coupled)
                 coherence && dynamics_and_results(i).is_motor_correct ==...
                 is_motor_correct && dynamics_and_results(i).is_motor_com ==...
                 is_motor_com)
-            initiation_time_gather(j)=(dynamics_and_results(i).initiation_time - times_mean)/times_std;
+            if(is_eye)
+                value = dynamics_and_results(i).eye_initiation_time;
+                if(dynamics_and_results(i).eye_initiation_time == 0)
+                    value = nan;
+                end
+                initiation_time_gather(j)=(value - times_mean)/times_std;
+            else
+                value = dynamics_and_results(i).initiation_time;
+                if(dynamics_and_results(i).initiation_time == 0)
+                    value = nan;
+                end
+                initiation_time_gather(j)=(value - times_mean)/times_std;
+            end
+            
             j=j+1;
         end
     end
@@ -559,14 +572,26 @@ else
                 is_motor_correct && dynamics_and_results(i).is_motor_com ==...
                 is_motor_com && dynamics_and_results(i).is_first_correct ==...
                 is_first_correct)
-            initiation_time_gather(j)=(dynamics_and_results(i).initiation_time - times_mean)/times_std;
+            if(is_eye)
+                value = dynamics_and_results(i).eye_initiation_time;
+                if(dynamics_and_results(i).eye_initiation_time == 0)
+                    value = nan;
+                end
+                initiation_time_gather(j)=(value - times_mean)/times_std;
+            else
+                value = dynamics_and_results(i).initiation_time;
+                if(dynamics_and_results(i).initiation_time == 0)
+                    value = nan;
+                end
+                initiation_time_gather(j)=(value - times_mean)/times_std;
+            end
             j=j+1;
         end
     end
 end
 
-initiation_time_mean = mean(initiation_time_gather);
-initiation_time_std = std(initiation_time_gather)/sqrt(size(initiation_time_gather,2));
+initiation_time_mean = nanmean(initiation_time_gather);
+initiation_time_std = nanstd(initiation_time_gather)/sqrt(size(initiation_time_gather,2));
 
 
 return;
