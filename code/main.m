@@ -443,6 +443,7 @@ global stim_offset;
 if(~decision_module_crossed)
     initiation_time=0;
     motor_preparation_crossed=0;
+    initiation_time_eye =0;
     y_8=[];
     y_7=[];
     return;
