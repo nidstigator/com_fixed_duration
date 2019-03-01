@@ -9,7 +9,7 @@ global export;
 global figures_path;
 global experiment_string;
 
-experiment_string = 'exp2';
+experiment_string = 'exp1';
 
 figures_path = '../figures_output/';
 
@@ -139,10 +139,10 @@ xlabel(x_string);
 pubgraph(figure7,18,4,'w')
 
 
-data_file_name_1=[figures_path 'Fig1_d1_' experiment_string '.mat'];
-data_file_name_2=[figures_path 'Fig1_d2_' experiment_string '.mat'];
-data_file_name_csv_1=[figures_path 'Fig1_d1_' experiment_string '.txt'];
-data_file_name_csv_2=[figures_path 'Fig1_d2_' experiment_string '.txt'];
+data_file_name_1=[figures_path 'Fig1_d1' e '.mat'];
+data_file_name_2=[figures_path 'Fig1_d2.mat'];
+data_file_name_csv_1=[figures_path 'Fig1_d1.txt'];
+data_file_name_csv_2=[figures_path 'Fig1_d2.txt'];
 header_1 = {'x_fit,y_fit'};
 header_2 = {'x_real,y_real'};
 
@@ -181,7 +181,6 @@ function plot_x_pattern(dynamics_and_results,normalised)
 global legends;
 global titles;
 global export;
-global experiment_string;
 
 global figures_path;
 coherences = get_coherence_levels(dynamics_and_results);
@@ -296,8 +295,8 @@ ylabel(y_string);
 pubgraph(figure1,18,4,'w')
 ylim([-1,110]);
 
-data_file_name=[figures_path 'Fig1_c_' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig1_c_' experiment_string '.txt'];
+data_file_name=[figures_path 'Fig1_c.mat'];
+data_file_name_csv=[figures_path 'Fig1_c.txt'];
 header = {'x_correct,x_correct_sem,x_error,x_error_sem'};
 
 fig_1_data = [x_correct_max'*100,x_correct_max_std'*100,x_incorrect_max'*100,x_incorrect_max_std'*100,];
@@ -333,7 +332,6 @@ global legends;
 global titles;
 global export;
 global figures_path;
-global experiment_string;
 
 large_left= 'c`=51.2%, left';
 large_right = 'c`=51.2%, right';
@@ -431,8 +429,8 @@ xticks([700,1500,2500])
 xticklabels({'0','1500', '2500'})
 pubgraph(figure1,18,4,'w');
 
-data_file_name=[figures_path 'Fig1_b_' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig1_b_' experiment_string '.txt'];
+data_file_name=[figures_path 'Fig1_b.mat'];
+data_file_name_csv=[figures_path 'Fig1_b.txt'];
 header = {'y_1_25','y_2_25','y_3_25','y_4_25','y_5_25','y_6_25','y_7_25','y_8_25','y_mc_hu_25','y_mc_lu_25','y_1','y_2','y_3','y_4','y_5','y_6','y_7','y_8','y_mc_hu','y_mc_lu'};
 
 fig_1_data = [y_1_25', y_2_25',y_3_25', y_4_25', y_5_25', y_6_25', y_7_25', y_8_25', y_mc_hu_25', y_mc_lu_25', y_1', y_2', y_3', y_4', y_5', y_6', y_7', y_8', y_mc_hu', y_mc_lu',];

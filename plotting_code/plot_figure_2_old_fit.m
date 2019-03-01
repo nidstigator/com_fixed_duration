@@ -6,9 +6,7 @@ global legends;
 global titles;
 global export;
 global figures_path;
-global experiment_string;
 
-experiment_string = 'exp2';
 figures_path = '../figures_output/';
 
 legends = true;
@@ -42,8 +40,6 @@ global legends;
 global titles;
 global export;
 global figures_path;
-global experiment_string;
-
 coherences = get_coherence_levels(dynamics_and_results);
 n_of_coherences= size(coherences,2);
 
@@ -101,21 +97,11 @@ end
 %%%%%%%%Fig1: Psychometric function for CoM/non-com.
 
 %%%% fit method and options
-% % Set up fittype and options.
-% ft = fittype( '1-0.5*exp(-(x/a).^b)', 'independent', 'x', 'dependent', 'y' );
-% opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
-% opts.Algorithm = 'Levenberg-Marquardt';
-% opts.Display = 'Off';
-% opts.Robust = 'LAR';
-% opts.StartPoint = [0.76084785946683 0.987949459272857];
-
-% Exp2 fit
-ft = fittype( '1-0.5*exp(-(x/a).^b)', 'independent', 'x', 'dependent', 'y' );
+% Set up fittype and options.
+ft = fittype( '1-0.6*exp(-(x/a).^b)', 'independent', 'x', 'dependent', 'y' );
 opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
 opts.Display = 'Off';
-opts.Robust = 'LAR';
-opts.StartPoint = [0.927909247638866 0.415918928349508];
-
+opts.StartPoint = [0.14646767384734 0.727853824810345];
 
 % Fit model to data.
 
@@ -171,10 +157,10 @@ end
 if(titles)
     title(title_string);
 end
-data_file_name_1=[figures_path 'Fig2_a1_' experiment_string '.mat'];
-data_file_name_2=[figures_path 'Fig2_a2_' experiment_string '.mat'];
-data_file_name_csv_1=[figures_path 'Fig2_a1_' experiment_string '.txt'];
-data_file_name_csv_2=[figures_path 'Fig2_a2_' experiment_string '.txt'];
+data_file_name_1=[figures_path 'Fig2_a1.mat'];
+data_file_name_2=[figures_path 'Fig2_a2.mat'];
+data_file_name_csv_1=[figures_path 'Fig2_a1.txt'];
+data_file_name_csv_2=[figures_path 'Fig2_a2.txt'];
 header_1 = {'pcorrect_x_fit,pcorrect_y_fit'};
 header_2 = {'pcorrect_x_real,pcorrect_y_real'};
 
@@ -201,10 +187,10 @@ dlmwrite(data_file_name_csv_2, fig_1_data_2(1:end,:), '-append') ;
 
 %%% COM save:
 
-data_file_name_1=[figures_path 'Fig2_b1_' experiment_string '.mat'];
-data_file_name_2=[figures_path 'Fig2_b2_' experiment_string '.mat'];
-data_file_name_csv_1=[figures_path 'Fig2_b1_' experiment_string '.txt'];
-data_file_name_csv_2=[figures_path 'Fig2_b2_' experiment_string '.txt'];
+data_file_name_1=[figures_path 'Fig2_b1.mat'];
+data_file_name_2=[figures_path 'Fig2_b2.mat'];
+data_file_name_csv_1=[figures_path 'Fig2_b1.txt'];
+data_file_name_csv_2=[figures_path 'Fig2_b2.txt'];
 header_1 = {'pcorrect_com_x_fit,pcorrect_com_y_fit'};
 header_2 = {'pcorrect_x_real,pcorrect_y_real'};
 
@@ -307,8 +293,8 @@ end
 if(titles)
     title(title_string);
 end
-data_file_name=[figures_path 'Fig2_c_' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig2_c_' experiment_string '.txt'];
+data_file_name=[figures_path 'Fig2_c.mat'];
+data_file_name_csv=[figures_path 'Fig2_c.txt'];
 header = {'init_z_correct,init_z_correct_sem,init_z_error,init_z_error_sem'};
 
 fig_2c_data = [initiation_time_noncom_correct_mean_gather',...
@@ -361,8 +347,8 @@ if(titles)
     title(title_string);
 end
 
-data_file_name=[figures_path 'fig2_d_' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'fig2_d_' experiment_string '.txt'];
+data_file_name=[figures_path 'fig2_d.mat'];
+data_file_name_csv=[figures_path 'fig2_d.txt'];
 header = {'eye_init_z_correct,eye_init_z_correct_sem,eye_init_z_error,eye_init_z_error_sem'};
 
 fig_2d_data = [eye_initiation_time_noncom_correct_mean_gather',...
@@ -480,18 +466,25 @@ for i = 1:size(dynamics_and_results,1)
     counter = counter+1;
 end
 
-hand_initiation_time_gather = NaN(1,counter);
+hand_initiation_time_gather = zeros(1,counter);
 
-eye_initiation_time_gather = NaN(1,counter);
+eye_initiation_time_gather = zeros(1,counter);
 
 j=1;
 
 
 for i = 1:size(dynamics_and_results,1)
-    if(dynamics_and_results(i).motor_decision_made)
-        hand_initiation_time_gather(j)=dynamics_and_results(i).initiation_time;
-        eye_initiation_time_gather(j)=dynamics_and_results(i).eye_initiation_time;
+    hand_initiation_time_gather(j)=dynamics_and_results(i).initiation_time;
+    eye_initiation_time_gather(j)=dynamics_and_results(i).eye_initiation_time;
+    
+    if(dynamics_and_results(i).initiation_time == 0)
+       hand_initiation_time_gather(j)=nan;
     end
+    
+    if(dynamics_and_results(i).eye_initiation_time == 0)
+        eye_initiation_time_gather(j)=nan;
+    end      
+
     j=j+1;
 end
 
@@ -526,94 +519,76 @@ if(~ismember(coherence,coherences))
 end
 
 counter = 0;
-% 
-% if(~coupled)
-%     for i = 1:size(dynamics_and_results,1)
-%         if(dynamics_and_results(i).coherence_level ==...
-%                 coherence && dynamics_and_results(i).is_motor_correct ==...
-%                 is_motor_correct && dynamics_and_results(i).is_motor_com == ...
-%                 is_motor_com && dynamics_and_results(i).motor_decision_made)
-%             counter = counter+1;
-%         end
-%     end
-% else
-%     for i = 1:size(dynamics_and_results,1)
-%         if(dynamics_and_results(i).coherence_level ==...
-%                 coherence && dynamics_and_results(i).is_motor_correct ==...
-%                 is_motor_correct && dynamics_and_results(i).is_motor_com == ...
-%                 is_motor_com && dynamics_and_results(i).is_first_correct == ...
-%                 is_first_correct && dynamics_and_results(i).motor_decision_made)
-%             counter = counter+1;
-%         end
-%     end
-% end
-% 
-% initiation_time_gather = zeros(1,counter);
-% 
-% j=1;
-% if(~coupled)
-%     for i = 1:size(dynamics_and_results,1)
-%         if(dynamics_and_results(i).coherence_level == ...
-%                 coherence && dynamics_and_results(i).is_motor_correct ==...
-%                 is_motor_correct && dynamics_and_results(i).is_motor_com ==...
-%                 is_motor_com && dynamics_and_results(i).motor_decision_made)
-%             if(is_eye)
-%                 value = dynamics_and_results(i).eye_initiation_time;
-%                 initiation_time_gather(j)=(value - times_mean)/times_std;
-%             else
-%                 value = dynamics_and_results(i).initiation_time;
-%                 initiation_time_gather(j)=(value - times_mean)/times_std;
-%             end
-%             
-%             j=j+1;
-%         end
-%     end
-% else
-%     for i = 1:size(dynamics_and_results,1)
-%         if(dynamics_and_results(i).coherence_level == ...
-%                 coherence && dynamics_and_results(i).is_motor_correct ==...
-%                 is_motor_correct && dynamics_and_results(i).is_motor_com ==...
-%                 is_motor_com && dynamics_and_results(i).is_first_correct ==...
-%                 is_first_correct && dynamics_and_results(i).motor_decision_made)
-%             if(is_eye)
-%                 value = dynamics_and_results(i).eye_initiation_time;
-%                 initiation_time_gather(j)=(value - times_mean)/times_std;
-%             else
-%                 value = dynamics_and_results(i).initiation_time;
-%                 initiation_time_gather(j)=(value - times_mean)/times_std;
-%             end
-%             j=j+1;
-%         end
-%     end
-% end
 
-
-
-for i = 1:size(dynamics_and_results,1)
-    if(dynamics_and_results(i).coherence_level ==...
-            coherence && dynamics_and_results(i).is_motor_correct ==...
-                 is_motor_correct && dynamics_and_results(i).motor_decision_made)
-        counter = counter+1;
+if(~coupled)
+    for i = 1:size(dynamics_and_results,1)
+        if(dynamics_and_results(i).coherence_level ==...
+                coherence && dynamics_and_results(i).is_motor_correct ==...
+                is_motor_correct && dynamics_and_results(i).is_motor_com == ...
+                is_motor_com && dynamics_and_results(i).motor_decision_made)
+            counter = counter+1;
+        end
+    end
+else
+    for i = 1:size(dynamics_and_results,1)
+        if(dynamics_and_results(i).coherence_level ==...
+                coherence && dynamics_and_results(i).is_motor_correct ==...
+                is_motor_correct && dynamics_and_results(i).is_motor_com == ...
+                is_motor_com && dynamics_and_results(i).is_first_correct == ...
+                is_first_correct && dynamics_and_results(i).motor_decision_made)
+            counter = counter+1;
+        end
     end
 end
-
 
 initiation_time_gather = zeros(1,counter);
 
 j=1;
-
-for i = 1:size(dynamics_and_results,1)
-    if(dynamics_and_results(i).coherence_level == ...
-            coherence && dynamics_and_results(i).is_motor_correct ==...
-                 is_motor_correct && dynamics_and_results(i).motor_decision_made)
-        if(is_eye)
-            value = dynamics_and_results(i).eye_initiation_time;
-            initiation_time_gather(j)=(value - times_mean)/times_std;
-        else
-            value = dynamics_and_results(i).initiation_time;
-            initiation_time_gather(j)=(value - times_mean)/times_std;
+if(~coupled)
+    for i = 1:size(dynamics_and_results,1)
+        if(dynamics_and_results(i).coherence_level == ...
+                coherence && dynamics_and_results(i).is_motor_correct ==...
+                is_motor_correct && dynamics_and_results(i).is_motor_com ==...
+                is_motor_com && dynamics_and_results(i).motor_decision_made)
+            if(is_eye)
+                value = dynamics_and_results(i).eye_initiation_time;
+                if(dynamics_and_results(i).eye_initiation_time == 0)
+                    value = nan;
+                end
+                initiation_time_gather(j)=(value - times_mean)/times_std;
+            else
+                value = dynamics_and_results(i).initiation_time;
+                if(dynamics_and_results(i).initiation_time == 0)
+                    value = nan;
+                end
+                initiation_time_gather(j)=(value - times_mean)/times_std;
+            end
+            
+            j=j+1;
         end
-        j=j+1;                           
+    end
+else
+    for i = 1:size(dynamics_and_results,1)
+        if(dynamics_and_results(i).coherence_level == ...
+                coherence && dynamics_and_results(i).is_motor_correct ==...
+                is_motor_correct && dynamics_and_results(i).is_motor_com ==...
+                is_motor_com && dynamics_and_results(i).is_first_correct ==...
+                is_first_correct && dynamics_and_results(i).motor_decision_made)
+            if(is_eye)
+                value = dynamics_and_results(i).eye_initiation_time;
+                if(dynamics_and_results(i).eye_initiation_time == 0)
+                    value = nan;
+                end
+                initiation_time_gather(j)=(value - times_mean)/times_std;
+            else
+                value = dynamics_and_results(i).initiation_time;
+                if(dynamics_and_results(i).initiation_time == 0)
+                    value = nan;
+                end
+                initiation_time_gather(j)=(value - times_mean)/times_std;
+            end
+            j=j+1;
+        end
     end
 end
 

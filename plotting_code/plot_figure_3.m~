@@ -2,9 +2,7 @@ global legends;
 global titles;
 global export;
 global figures_path;
-global experiment_string;
 
-experiment_string = 'exp2';
 figures_path = '../figures_output/';
 
 legends = true;
@@ -18,8 +16,6 @@ calculate_eye_hand_lag(dynamics_and_results)
 
 function[] = calculate_eye_hand_lag(dynamics_and_results)
 global figures_path;
-global experiment_string;
-
 counter = 0;
 for i = 1:size(dynamics_and_results,1)
     if(dynamics_and_results(i).com_initiation_point_hand ~=0)
@@ -60,7 +56,7 @@ figure
 histfit(lag,40,'normal')
 
 data_file_name=[figures_path 'Fig3_c' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig3_c_' experiment_string '.txt'];
+data_file_name_csv=[figures_path 'Fig3_c.txt'];
 header = {'lag'};
 
 fig3_c = [lag'];
@@ -82,8 +78,6 @@ global legends;
 global titles;
 global export;
 global figures_path;
-global experiment_string;
-
 coherences = get_coherence_levels(dynamics_and_results);
 n_of_coherences= size(coherences,2);
 
@@ -165,8 +159,8 @@ savefig(export_path);
 end
 %%%%%%%%
 
-data_file_name=[figures_path 'Fig3_ab_' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig3_ab_' experiment_string '.txt'];
+data_file_name=[figures_path 'Fig3_ab.mat'];
+data_file_name_csv=[figures_path 'Fig3_ab.txt'];
 header = {'p_com_all,p_com_correct,pcom_incorrect'};
 
 fig3_ab_data = [p_com',...

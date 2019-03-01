@@ -1,6 +1,6 @@
 % 
 % %call functions to test:
-close all;
+% close all;
 % clearvars -except dynamics_and_results dynamics_and_results_2nddecision;
 
 global legends;
@@ -49,30 +49,32 @@ normalised = true;
 % plot_main_panel(y_1,y_2,y_3,y_4,y_5,y_6,y_7,y_8,y_mc_hu,y_mc_lu,true,0)
 % 
 % end
-
-is_motor_correct = true;
-is_motor_com = false;
-
-[y_1, y_2, y_3, y_4, y_mc_hu, y_mc_lu, y_5, y_6, y_7, y_8] = ...
-    calculate_mean_activity(dynamics_and_results, 3.2, ...
-    is_motor_correct, is_motor_com);
-
-[y_1_25, y_2_25,y_3_25, y_4_25, y_mc_hu_25, y_mc_lu_25, y_5_25, y_6_25, y_7_25, y_8_25] = ...
-    calculate_mean_activity(dynamics_and_results, 51.2, ...
-    is_motor_correct, is_motor_com);
-
-is_single_trial = false;
-
-
-plot_main_panel_modified(dynamics_and_results,y_1,y_2,y_3,y_4,y_5,y_6,y_mc_hu,y_mc_lu,y_7,y_8,y_1_25,y_2_25,y_3_25,y_4_25,y_5_25,y_6_25,y_mc_hu_25,y_mc_lu_25, y_7_25, y_8_25)
-
-%  
-% any = false;
-% is_motor_com = true;
+% 
 % is_motor_correct = true;
-% coherence=3.2;
-% is_late_com = false;
+% is_motor_com = false;
+% 
+% [y_1, y_2, y_3, y_4, y_mc_hu, y_mc_lu, y_5, y_6, y_7, y_8] = ...
+%     calculate_mean_activity(dynamics_and_results, 3.2, ...
+%     is_motor_correct, is_motor_com);
+% 
+% [y_1_25, y_2_25,y_3_25, y_4_25, y_mc_hu_25, y_mc_lu_25, y_5_25, y_6_25, y_7_25, y_8_25] = ...
+%     calculate_mean_activity(dynamics_and_results, 51.2, ...
+%     is_motor_correct, is_motor_com);
+% 
+% is_single_trial = false;
+% 
+% 
+% plot_main_panel_modified(dynamics_and_results,y_1,y_2,y_3,y_4,y_5,y_6,y_mc_hu,y_mc_lu,y_7,y_8,y_1_25,y_2_25,y_3_25,y_4_25,y_5_25,y_6_25,y_mc_hu_25,y_mc_lu_25, y_7_25, y_8_25)
+
+ 
+any = false;
+is_motor_com = true;
+is_motor_correct = false;
+coherence=6.4;
+is_late_com = false;
 % plot_random_trial(dynamics_and_results, coherence, any, is_motor_com, is_motor_correct,is_late_com)
+
+plot_random_trial_trajectories(dynamics_and_results, coherence, any, is_motor_com, is_motor_correct,is_late_com)
 
 % % coherences = get_coherence_levels(dynamics_and_results);
 % % for i=1:size(coherences,2)
@@ -88,18 +90,18 @@ plot_main_panel_modified(dynamics_and_results,y_1,y_2,y_3,y_4,y_5,y_6,y_mc_hu,y_
 % %     plot_trajectory(x_traj_noncom_incorrect_mean, coherence, false, false, false);
 % % end
 % 
-% % coherence = 0;
-% % is_motor_correct = true;
-% % all_com = false;
-% % is_motor_com = true;
-% % is_late_com = false;
-% % 
-% % 
-% % com_correct_gather= gather_trajectories(dynamics_and_results,coherence,...
-% %     is_motor_com, is_motor_correct,all_com, is_late_com);
-% % 
-% % plot_all_trajectories(com_correct_gather,0,is_motor_com,is_motor_correct);
-% % 
+% coherence = 3.2;
+% is_motor_correct = true;
+% all_com = false;
+% is_motor_com = false;
+% is_late_com = false;
+% 
+% 
+% com_correct_gather= gather_trajectories(dynamics_and_results,coherence,...
+%     is_motor_com, is_motor_correct,all_com, is_late_com);
+% 
+% plot_all_trajectories(com_correct_gather,0,is_motor_com,is_motor_correct);
+
 
 %% plotting functions
 
@@ -363,6 +365,77 @@ y_2_averaged = calculate_time_window(y_2,100,10);
 plot_main_panel(y_1,y_2,y_3,y_4,y_5,y_6,y_7,y_8,y_mc_hu,y_mc_lu,true,coherence);
 
 plot_time_window(dynamics_and_results, index_to_plot, y_1_averaged,y_2_averaged,100,10);
+
+
+
+end
+
+function plot_random_trial_trajectories(dynamics_and_results, coherence, any, is_motor_com, is_motor_correct,is_late_com)
+
+coherences = get_coherence_levels(dynamics_and_results);
+
+if(~ismember(coherence,coherences))
+    error('coherence level not found in data');
+end
+
+counter = 0;
+%get number of each type, before initialising vectors.
+
+
+for i = 1:size(dynamics_and_results,1)
+    if(dynamics_and_results(i).coherence_level == coherence && dynamics_and_results(i).is_motor_correct == is_motor_correct && dynamics_and_results(i).is_motor_com == is_motor_com && dynamics_and_results(i).is_late_com == is_late_com)
+        counter = counter+1;
+    end
+end
+
+indecies = zeros(1,counter);
+j=1;
+
+if(any)
+    for i = 1:size(dynamics_and_results,1)
+        if(dynamics_and_results(i).coherence_level == coherence)
+            indecies(j) = i;
+            j=j+1;
+        end
+    end
+else
+    for i = 1:size(dynamics_and_results,1)
+        if(dynamics_and_results(i).coherence_level == coherence &&...
+                dynamics_and_results(i).is_motor_correct == is_motor_correct...
+                && dynamics_and_results(i).is_motor_com == is_motor_com && dynamics_and_results(i).is_late_com ==is_late_com)
+            indecies(j) = i;
+            j=j+1;
+        end
+    end
+end
+
+%pick a random element
+
+index_to_plot= indecies(randi(numel(indecies)));
+
+y_1 = dynamics_and_results(index_to_plot).y_1;
+y_2 = dynamics_and_results(index_to_plot).y_2;
+y_mc_hu = dynamics_and_results(index_to_plot).y_mc_hu;
+y_mc_lu = dynamics_and_results(index_to_plot).y_mc_lu;
+y_3 = dynamics_and_results(index_to_plot).y_3;
+y_4 = dynamics_and_results(index_to_plot).y_4;
+y_5 = dynamics_and_results(index_to_plot).y_5;
+y_6 = dynamics_and_results(index_to_plot).y_6;
+y_7 = dynamics_and_results(index_to_plot).y_7;
+y_8 = dynamics_and_results(index_to_plot).y_8;
+% burster_left = dynamics_and_results(index_to_plot).burster_left;
+% burster_right = dynamics_and_results(index_to_plot).burster_right;
+
+burster_left = zeros(1,8000);
+burster_right = zeros(1,8000);
+
+
+y_1_averaged = calculate_time_window(y_1,100,10);
+y_2_averaged = calculate_time_window(y_2,100,10);
+
+plot_main_panel(y_1,y_2,y_3,y_4,y_5,y_6,y_7,y_8,y_mc_hu,y_mc_lu,burster_left,burster_right,true,coherence);
+
+% plot_time_window(dynamics_and_results, index_to_plot, y_1_averaged,y_2_averaged,100,10);
 
 
 
@@ -1001,7 +1074,7 @@ end
 %%%%%%%%
 end
 
-function plot_main_panel(y_1,y_2,y_3,y_4,y_5,y_6,y_7,y_8,y_mc_hu,y_mc_lu,is_single_trial,coherence)
+function plot_main_panel(y_1,y_2,y_3,y_4,y_5,y_6,y_7,y_8,y_mc_hu,y_mc_lu,burster_left,burster_right,is_single_trial,coherence)
 
 global export;
 
@@ -1012,46 +1085,54 @@ else
 end
 figure;
 title(title_string);
-subplot(6,1,1);
+subplot(5,1,1);
 hold on;
 plot(y_1(1:2:end));
 plot(y_2(1:2:end));
 legend('Left','Right');
 title(['Decision Module ' title_string]);
 
-subplot(6,1,2);
-hold on;
-plot(y_mc_hu(1:2:end));
-plot(y_mc_lu(1:2:end));
-legend('High Uncertainty'....
-    ,'Low Uncertainty');
-title(['Uncertainty Module ' title_string]);
 
-subplot(6,1,3);
+subplot(5,1,2);
 hold on;
 plot(y_3(1:2:end));
 plot(y_4(1:2:end));
 legend('Left','Right');
 title(['Eye Module ' title_string]);
 
-subplot(6,1,4);
+subplot(5,1,3);
 hold on;
 plot(y_5(1:2:end));
 plot(y_6(1:2:end));
 legend('Left','Right');
 title(['Hand Module ' title_string]);
 
-subplot(6,1,5);
+subplot(5,1,4);
 hold on;
 plot(y_7(1:2:end));
 plot(y_8(1:2:end));
 legend('Left','Right');
 title(['Motor Preperation Module ' title_string]);
 
-subplot(6,1,6);
+subplot(5,1,5);
+hold on;
+plot(burster_left(1:2:end));
+plot(burster_right(1:2:end));
+legend('Left','Right');
+title(['Burst' title_string]);
+
+figure;
+title('Random trial window- trajectories');
+subplot(2,1,1);
 hold on;
 plot(y_5(1:2:end) - y_6(1:2:end),'b');
 title(['X-Trajectory ' title_string]);
+
+subplot(2,1,2);
+hold on;
+plot(y_3(1:2:end) - y_4(1:2:end),'b');
+title(['X-Trajectory, Eye ' title_string]);
+
 
 if(export)
 export_path = [figures_path  'old_panel'];
