@@ -20,7 +20,7 @@ normalised = true;
 
 
 
-plot_accuracies_and_pcom(dynamics_and_results,is_first_correct,normalised);
+plot_accuracies_and_pcom(dynamics_and_results);
 
 
 function coherences = get_coherence_levels(dynamics_and_results)
@@ -37,7 +37,7 @@ return
 end
 
 
-function plot_accuracies_and_pcom(dynamics_and_results, is_first_correct,normalised)
+function plot_accuracies_and_pcom(dynamics_and_results)
 global legends;
 global titles;
 global export;
@@ -75,14 +75,13 @@ eye_initiation_time_com_incorrect_std_gather = zeros(1,n_of_coherences);
 
 
 
-coupled = isfield(dynamics_and_results,'is_first_correct');
 
 for i=1:n_of_coherences
     coherence= coherences(i);
     
     [noncom_correct_counter, noncom_incorrect_counter,...
         com_correct_counter, com_incorrect_counter, com_late_correct_counter, com_late_incorrect_counter, nondecision_counter] = ...
-        calculate_accuracies(dynamics_and_results, coherence, is_first_correct, coupled);
+        calculate_accuracies(dynamics_and_results, coherence);
     
     all_trials = noncom_correct_counter+ noncom_incorrect_counter ...
         +com_correct_counter + com_incorrect_counter;
@@ -92,8 +91,6 @@ for i=1:n_of_coherences
     p_correct_com(i) = (com_correct_counter)/(com_correct_counter+com_incorrect_counter);
     p_nondecision(i)= nondecision_counter/all_trials;
     
-
- com_correct_counter
     
 end
 
@@ -119,7 +116,6 @@ opts.StartPoint = [0.927909247638866 0.415918928349508];
 
 % Fit model to data.
 
-%p_correct = [0.506, 0.520, 0.612, 0.728, 0.872];
 [fitresult, gof] = fit( [0,3.2,6.4,12.8,25.6,51.2]', p_correct', ft, opts );
 
 %%% extract data from fitted curve
@@ -425,7 +421,7 @@ end
 
 function[noncom_correct_counter, noncom_incorrect_counter,...
     com_correct_counter, com_incorrect_counter, com_late_correct_counter, com_late_incorrect_counter,nondecision_counter] = ...
-    calculate_accuracies(dynamics_and_results, coherence, is_first_correct, coupled)
+    calculate_accuracies(dynamics_and_results, coherence)
 
 coherences = get_coherence_levels(dynamics_and_results);
 
@@ -443,7 +439,7 @@ nondecision_counter = 0;
 com_late_correct_counter = 0;
 com_late_incorrect_counter = 0;
 
-if(~coupled)
+
 for i = 1:size(dynamics_and_results,1)
     if(coherence==dynamics_and_results(i).coherence_level)
         if(dynamics_and_results(i).motor_decision_made)
@@ -470,40 +466,8 @@ for i = 1:size(dynamics_and_results,1)
     end
 end
 return;
-end
-
-for i = 1:size(dynamics_and_results,1)
-    if(coherence==dynamics_and_results(i).coherence_level)
-        if(is_first_correct==dynamics_and_results(i).is_first_correct)
-            if(dynamics_and_results(i).motor_decision_made)
-                if(dynamics_and_results(i).is_motor_correct)
-                    if(dynamics_and_results(i).is_motor_com)
-                        com_correct_counter = com_correct_counter+1;
-                        if(dynamics_and_results(i).is_late_com)
-                            com_late_correct_counter= com_late_correct_counter +1;
-                        end
-                    else
-                        noncom_correct_counter = noncom_correct_counter+1;
-                    end
-                elseif(dynamics_and_results(i).is_motor_com)
-                    com_incorrect_counter = com_incorrect_counter+1;
-                    if(dynamics_and_results(i).is_late_com)
-                        com_late_incorrect_counter= com_late_incorrect_counter +1;
-                    end
-                else
-                    noncom_incorrect_counter = noncom_incorrect_counter+1;
-                end
-            else
-                nondecision_counter = nondecision_counter+1;
-            end
-        end
-    end
-end
-return;
-
 
 end
-
 
 function[hand_initiation_time_mean, hand_initiation_time_std, eye_initiation_time_mean, eye_initiation_time_std] = ...
     mean_z_std_all_times(dynamics_and_results)

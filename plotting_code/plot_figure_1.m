@@ -40,10 +40,9 @@ plot_main_panel_modified(dynamics_and_results,y_1,y_2,y_3,y_4,y_5,y_6,y_mc_hu,y_
 
 plot_x_pattern(dynamics_and_results,normalised);
 
-plot_accuracy_vs_uncertainty(dynamics_and_results,is_first_correct,normalised)
+plot_accuracy_vs_uncertainty(dynamics_and_results,normalised)
 
-function plot_accuracy_vs_uncertainty(dynamics_and_results,is_first_correct,normalised)
-global legends;
+function plot_accuracy_vs_uncertainty(dynamics_and_results,normalised)
 global titles;
 global export;
 global figures_path;
@@ -59,7 +58,6 @@ x_incorrect_max = zeros(1,n_of_coherences);
 
 x_correct_max_std = zeros(1,n_of_coherences);
 x_incorrect_max_std = zeros(1,n_of_coherences);
-coupled = isfield(dynamics_and_results,'is_first_correct');
 
 is_motor_com = false;
 for i=1:n_of_coherences
@@ -67,7 +65,7 @@ for i=1:n_of_coherences
     
     [noncom_correct_counter, noncom_incorrect_counter,...
         com_correct_counter, com_incorrect_counter, ~, ~, ~] = ...
-        calculate_accuracies(dynamics_and_results, coherence, is_first_correct, coupled);
+        calculate_accuracies(dynamics_and_results, coherence,);
     
     
     
@@ -75,7 +73,7 @@ for i=1:n_of_coherences
         +com_correct_counter + com_incorrect_counter;
     [noncom_correct_counter, ~,...
         com_correct_counter, ~, ~, ~, ~] = ...
-        calculate_accuracies(dynamics_and_results, coherence, is_first_correct, coupled);
+        calculate_accuracies(dynamics_and_results, coherence);
     
     p_correct(i) = (noncom_correct_counter+com_correct_counter)/all_trials;
     [x_correct_max(i), ~, x_correct_max_std(i), ~,...
@@ -641,7 +639,7 @@ end
 
 function[noncom_correct_counter, noncom_incorrect_counter,...
     com_correct_counter, com_incorrect_counter, com_late_correct_counter, com_late_incorrect_counter,nondecision_counter] = ...
-    calculate_accuracies(dynamics_and_results, coherence, is_first_correct, coupled)
+    calculate_accuracies(dynamics_and_results, coherence)
 
 coherences = get_coherence_levels(dynamics_and_results);
 
@@ -659,7 +657,6 @@ nondecision_counter = 0;
 com_late_correct_counter = 0;
 com_late_incorrect_counter = 0;
 
-if(~coupled)
 for i = 1:size(dynamics_and_results,1)
     if(coherence==dynamics_and_results(i).coherence_level)
         if(dynamics_and_results(i).motor_decision_made)
@@ -686,36 +683,5 @@ for i = 1:size(dynamics_and_results,1)
     end
 end
 return;
-end
-
-for i = 1:size(dynamics_and_results,1)
-    if(coherence==dynamics_and_results(i).coherence_level)
-        if(is_first_correct==dynamics_and_results(i).is_first_correct)
-            if(dynamics_and_results(i).motor_decision_made)
-                if(dynamics_and_results(i).is_motor_correct)
-                    if(dynamics_and_results(i).is_motor_com)
-                        com_correct_counter = com_correct_counter+1;
-                        if(dynamics_and_results(i).is_late_com)
-                            com_late_correct_counter= com_late_correct_counter +1;
-                        end
-                    else
-                        noncom_correct_counter = noncom_correct_counter+1;
-                    end
-                elseif(dynamics_and_results(i).is_motor_com)
-                    com_incorrect_counter = com_incorrect_counter+1;
-                    if(dynamics_and_results(i).is_late_com)
-                        com_late_incorrect_counter= com_late_incorrect_counter +1;
-                    end
-                else
-                    noncom_incorrect_counter = noncom_incorrect_counter+1;
-                end
-            else
-                nondecision_counter = nondecision_counter+1;
-            end
-        end
-    end
-end
-return;
-
 
 end

@@ -11,9 +11,8 @@ legends = true;
 titles = false;
 export = false;
 
-is_first_correct= true;
 
-plot_accuracies_and_pcom(dynamics_and_results,is_first_correct);
+% plot_accuracies_and_pcom(dynamics_and_results);
 calculate_eye_hand_lag(dynamics_and_results)
 
 function[] = calculate_eye_hand_lag(dynamics_and_results)
@@ -22,17 +21,8 @@ global experiment_string;
 
 counter = 0;
 for i = 1:size(dynamics_and_results,1)
-    if(dynamics_and_results(i).com_initiation_point_hand ~=0)
+    if(dynamics_and_results(i).com_initiation_point_hand ~=0 && dynamics_and_results(i).com_initiation_point_eye ~=0)
         counter = counter+1;
-    end 
-
-    
-end
-
-counter2 = 0;
-for i = 1:size(dynamics_and_results,1)
-    if(dynamics_and_results(i).com_initiation_point_hand ==-1)
-        counter2 = counter2+1;
     end 
 end
 
@@ -42,7 +32,7 @@ eye_gather = zeros(1,counter);
 
 j=1;
 for i = 1:size(dynamics_and_results,1)
-    if(dynamics_and_results(i).is_not_com_eye == 0 && dynamics_and_results(i).motor_decision_made && dynamics_and_results(i).is_motor_com)
+    if(dynamics_and_results(i).is_not_com_eye == 0 && dynamics_and_results(i).motor_decision_made && dynamics_and_results(i).is_motor_com && ~dynamics_and_results(i).is_not_com_eye)
         hand_gather(j) = dynamics_and_results(i).com_initiation_point_hand;
         eye_gather(j) = dynamics_and_results(i).com_initiation_point_eye;
         j=j+1;
@@ -54,7 +44,6 @@ lag = hand_gather - eye_gather;
 
 lag = lag/2;
 
-
 mean(lag)
 figure
 histfit(lag,40,'normal')
@@ -63,7 +52,7 @@ data_file_name=[figures_path 'Fig3_c' experiment_string '.mat'];
 data_file_name_csv=[figures_path 'Fig3_c_' experiment_string '.txt'];
 header = {'lag'};
 
-fig3_c = [lag'];
+fig3_c = lag';
 
 save(data_file_name, 'lag');
 
@@ -73,11 +62,9 @@ fprintf(fid, '%s\n', header{1,end}) ;
 fclose(fid) ;
 dlmwrite(data_file_name_csv, fig3_c(1:end,:), '-append') ;
 
-
-
 end
 
-function plot_accuracies_and_pcom(dynamics_and_results, is_first_correct)
+function plot_accuracies_and_pcom(dynamics_and_results)
 global legends;
 global titles;
 global export;
@@ -104,14 +91,12 @@ p_correct = zeros(1,n_of_coherences);
 p_correct_noncom = zeros(1,n_of_coherences);
 p_nondecision = zeros(1,n_of_coherences);
 
-coupled = isfield(dynamics_and_results,'is_first_correct');
-
 for i=1:n_of_coherences
     coherence= coherences(i);
     
     [noncom_correct_counter, noncom_incorrect_counter,...
         com_correct_counter, com_incorrect_counter, com_late_correct_counter, com_late_incorrect_counter, nondecision_counter] = ...
-        calculate_accuracies(dynamics_and_results, coherence, is_first_correct, coupled);
+        calculate_accuracies(dynamics_and_results, coherence);
     
     
     
@@ -200,7 +185,7 @@ end
 
 function[noncom_correct_counter, noncom_incorrect_counter,...
     com_correct_counter, com_incorrect_counter, com_late_correct_counter, com_late_incorrect_counter,nondecision_counter] = ...
-    calculate_accuracies(dynamics_and_results, coherence, is_first_correct, coupled)
+    calculate_accuracies(dynamics_and_results, coherence)
 
 coherences = get_coherence_levels(dynamics_and_results);
 
@@ -218,114 +203,38 @@ nondecision_counter = 0;
 com_late_correct_counter = 0;
 com_late_incorrect_counter = 0;
 
-if(~coupled)
-    for i = 1:size(dynamics_and_results,1)
-        if(coherence==dynamics_and_results(i).coherence_level)
-            if(dynamics_and_results(i).motor_decision_made)
-                if(dynamics_and_results(i).is_motor_correct)
-                    if(dynamics_and_results(i).is_motor_com)
-                        if(check_com_advanced_condition(dynamics_and_results, i))
-                            com_correct_counter = com_correct_counter+1;
-                            if(dynamics_and_results(i).is_late_com)
-                                com_late_correct_counter= com_late_correct_counter +1;
-                            end
-                        end
-                    else
-                        noncom_correct_counter = noncom_correct_counter+1;
-                    end
-                elseif(dynamics_and_results(i).is_motor_com)
-                    if(check_com_advanced_condition(dynamics_and_results, i))
-                        com_incorrect_counter = com_incorrect_counter+1;
-                        if(dynamics_and_results(i).is_late_com)
-                            com_late_incorrect_counter= com_late_incorrect_counter +1;
-                        end
-                    end
-                else
-                    noncom_incorrect_counter = noncom_incorrect_counter+1;
-                end
-            else
-                nondecision_counter = nondecision_counter+1;
-            end
-            
-        end
-    end
-return;
-end
 
 for i = 1:size(dynamics_and_results,1)
     if(coherence==dynamics_and_results(i).coherence_level)
-        if(is_first_correct==dynamics_and_results(i).is_first_correct)
-            if(dynamics_and_results(i).motor_decision_made)
-                if(dynamics_and_results(i).is_motor_correct)
-                    if(dynamics_and_results(i).is_motor_com)
-                        if(check_com_advanced_condition(dynamics_and_results, i))
-                            com_correct_counter = com_correct_counter+1;
-                            if(dynamics_and_results(i).is_late_com)
-                                com_late_correct_counter= com_late_correct_counter +1;
-                            end
-                        end
-                    else
-                        noncom_correct_counter = noncom_correct_counter+1;
-                    end
-                elseif(dynamics_and_results(i).is_motor_com)
+        if(dynamics_and_results(i).motor_decision_made)
+            if(dynamics_and_results(i).is_motor_correct)
+                if(dynamics_and_results(i).is_motor_com)
                     if(check_com_advanced_condition(dynamics_and_results, i))
-                        com_incorrect_counter = com_incorrect_counter+1;
+                        com_correct_counter = com_correct_counter+1;
                         if(dynamics_and_results(i).is_late_com)
-                            com_late_incorrect_counter= com_late_incorrect_counter +1;
+                            com_late_correct_counter= com_late_correct_counter +1;
                         end
                     end
                 else
-                    noncom_incorrect_counter = noncom_incorrect_counter+1;
+                    noncom_correct_counter = noncom_correct_counter+1;
+                end
+            elseif(dynamics_and_results(i).is_motor_com)
+                if(check_com_advanced_condition(dynamics_and_results, i))
+                    com_incorrect_counter = com_incorrect_counter+1;
+                    if(dynamics_and_results(i).is_late_com)
+                        com_late_incorrect_counter= com_late_incorrect_counter +1;
+                    end
                 end
             else
-                nondecision_counter = nondecision_counter+1;
+                noncom_incorrect_counter = noncom_incorrect_counter+1;
             end
+        else
+            nondecision_counter = nondecision_counter+1;
         end
+        
     end
 end
 return;
-
-
 end
 
-function [itiscom] = check_com_advanced_condition(dynamics_and_results, index)
-
-itiscom = false;
-
-x_traj = dynamics_and_results(index).y_6-dynamics_and_results(index).y_5;
-
-
-if(dynamics_and_results(index).is_motor_correct)
-    x_traj = dynamics_and_results(index).y_5-dynamics_and_results(index).y_6;
-end
-
-smoothed_trajectory = filter(ones(1,50)/50,1,x_traj);
-delta_of_trajectory = diff(sign(smoothed_trajectory));
-
-points_of_change = find(delta_of_trajectory);
-
-if(size(points_of_change,2)<2)
-    return;
-end
-
-for i=size(points_of_change,2):-1:2
-    if(max(smoothed_trajectory(points_of_change(i-1):points_of_change(i)))>0)
-        sign_of_response = sign(smoothed_trajectory((dynamics_and_results(index).movement_duration + dynamics_and_results(index).initiation_time + 850+900)/dynamics_and_results(index).timestep_size));
-        sign_of_max_point_in_bump =  sign(max(smoothed_trajectory(points_of_change(i-1):points_of_change(i))));
-        
-        
-        if(sign_of_response *  sign_of_max_point_in_bump == -1)
-            if(max(abs(smoothed_trajectory(points_of_change(i-1):points_of_change(i))))>2)
-                itiscom=true;
-                return;
-            end
-
-        end
-
-    end
-    
-end
-
-return
-
-end
+ 

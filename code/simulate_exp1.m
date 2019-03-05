@@ -233,7 +233,7 @@ decision_module_crossed_hand = false;
 gain_mc_lu = 1;     % Gain of input-output function (cf. Wong & Wang, 2006)
 tau_mc_lu = 150;    % Membrane time constant (cf. Wilson and Cowan, 1972)
 
-j0_mc_hu = 0.02;   % (excitation) Coupling constant from HU to eye module
+j0_mc_hu = 0.09;   % (excitation) Coupling constant from HU to eye module
 j_mc_dec_lu = 1;    % Coupling from decision module to excitatory mc
 j_self_mc = 0;      % Self excitation constant for MC.
 %%%%%%%%%%%%
@@ -523,41 +523,11 @@ if(size(points_of_change,2)<2)
     return;
 end
 
-
-
-
-
 %take the last two points of change.
 point_of_change = points_of_change(end);
-point_before_point_of_change=points_of_change(end-1);
-
-
-
-%% Eye
-smoothed_trajectory_eye = filter(ones(1,50)/50,1,x_traj_eye);
-
-delta_of_trajectory_eye = diff(sign(smoothed_trajectory_eye));
-
-points_of_change_eye = find(delta_of_trajectory_eye);
-
-
-
 
 
 %difference between last two points of change is 50, then something is
-%wrong.
-% if(point_of_change-point_before_point_of_change < 50)
-%     return;
-% end
-
-% check if the maximum amplitude of signall is less than 1 between the two
-% points of change- then the change isn't significant.
-% if(max(abs(x_traj(point_before_point_of_change:point_of_change)))<1)
-%     return;
-% end
-
-% check if Change-of-Mind (after the point of change, is the threshold
-% actually reached?)
 for i = point_of_change:trial_length-1
     if(y_5(i)>=motor_target_threshold || y_6(i)>=motor_target_threshold)
         is_motor_com = true;
@@ -565,23 +535,27 @@ for i = point_of_change:trial_length-1
     end
 end
 
-%check if correct Change-of-Mind
+%check if correct late Change-of-Mind
 if(is_motor_com && is_motor_correct && point_of_change > left_reached && left_reached ~=0)
     is_late_com = true;
 end
 
-%check if incorrect Change-of-Mind
+%check if incorrect late Change-of-Mind
 if(is_motor_com && ~is_motor_correct && point_of_change > right_reached && right_reached ~=0)
     is_late_com = true;
 end
 
 com_initiation_point_hand = point_of_change;
+
+
+smoothed_trajectory_eye = filter(ones(1,50)/50,1,x_traj_eye);
+delta_of_trajectory_eye = diff(sign(smoothed_trajectory_eye));
+points_of_change_eye = find(delta_of_trajectory_eye);
 if(size(points_of_change_eye,2)<2)
     is_not_com_eye = true;
     return;
 end
 
-points_of_change_eye = find(delta_of_trajectory);
 point_of_change_eye = points_of_change_eye(end);
 com_initiation_point_eye = point_of_change_eye;
 
