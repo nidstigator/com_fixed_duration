@@ -9,7 +9,7 @@ global export;
 global figures_path;
 global experiment_string;
 
-experiment_string = 'exp1';
+experiment_string = 'exp2';
 figures_path = '../figures_output/';
 
 legends = true;
