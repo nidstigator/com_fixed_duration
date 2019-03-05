@@ -244,37 +244,37 @@ for i=1:n_of_coherences
     coherence= coherences(i);
     [initiation_time_noncom_correct_mean_gather(i),initiation_time_noncom_correct_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        true, false, is_first_correct, coupled,times_mean_hand,times_std_hand,false);
+        true, false, times_mean_hand,times_std_hand,false);
     
     [initiation_time_noncom_incorrect_mean_gather(i),initiation_time_noncom_incorrect_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        false, false, is_first_correct, coupled,times_mean_hand,times_std_hand,false);
+        false, false, times_mean_hand,times_std_hand,false);
     
     [initiation_time_com_correct_mean_gather(i),initiation_time_com_correct_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        true, true, is_first_correct, coupled,times_mean_hand,times_std_hand,false);
+        true, true, times_mean_hand,times_std_hand,false);
     
     [initiation_time_com_incorrect_mean_gather(i),initiation_time_com_incorrect_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        false, true, is_first_correct, coupled,times_mean_hand,times_std_hand,false);
+        false, true, times_mean_hand,times_std_hand,false);
         
     
     
     [eye_initiation_time_noncom_correct_mean_gather(i),eye_initiation_time_noncom_correct_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        true, false, is_first_correct, coupled,times_mean_eye,times_std_eye,true);
+        true, false, times_mean_eye,times_std_eye,true);
     
     [eye_initiation_time_noncom_incorrect_mean_gather(i),eye_initiation_time_noncom_incorrect_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        false, false, is_first_correct, coupled,times_mean_eye,times_std_eye,true);
+        false, false, times_mean_eye,times_std_eye,true);
     
     [eye_initiation_time_com_correct_mean_gather(i),eye_initiation_time_com_correct_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        true, true, is_first_correct, coupled,times_mean_eye,times_std_eye,true);
+        true, true, times_mean_eye,times_std_eye,true);
     
     [eye_initiation_time_com_incorrect_mean_gather(i),eye_initiation_time_com_incorrect_std_gather(i)] = ...
         calculate_z_score(dynamics_and_results, coherence, ...
-        false, true, is_first_correct, coupled,times_mean_eye,times_std_eye,true);
+        false, true, times_mean_eye,times_std_eye,true);
 end
 
 figure4=figure;
@@ -290,8 +290,6 @@ errorbar(initiation_time_noncom_incorrect_mean_gather,...
     ,'LineWidth', 2,'DisplayName',...
     'error','Color',[1 0 0]);
 
-% scatter([0,3.2,6.4,12.8,25.6,51.2],normalised_initiation_time_noncom_correct,'o','LineWidth',4,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor', [0 0 1]);
-% scatter([0,3.2,6.4,12.8,25.6,51.2],normalised_initiation_time_noncom_incorrect,'o','LineWidth',4,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor', [1 0 0]);
 
 xlim(axes1,[1 6]);
 set(axes1,'FontSize',20,'XTickLabel',...
@@ -307,6 +305,7 @@ end
 if(titles)
     title(title_string);
 end
+
 data_file_name=[figures_path 'Fig2_c_' experiment_string '.mat'];
 data_file_name_csv=[figures_path 'Fig2_c_' experiment_string '.txt'];
 header = {'init_z_correct,init_z_correct_sem,init_z_error,init_z_error_sem'};
@@ -322,6 +321,27 @@ fprintf(fid, '%s,', header{1,1:end-1}) ;
 fprintf(fid, '%s\n', header{1,end}) ;
 fclose(fid) ;
 dlmwrite(data_file_name_csv, fig_2c_data(1:end,:), '-append') ;
+
+
+%%% COM: 
+data_file_name=[figures_path 'Fig2_c2_' experiment_string '.mat'];
+data_file_name_csv=[figures_path 'Fig2_c2_' experiment_string '.txt'];
+header = {'init_z_correct,init_z_correct_sem,init_z_error,init_z_error_sem'};
+
+fig_2c_data = [initiation_time_com_correct_mean_gather',...
+    initiation_time_com_correct_std_gather',initiation_time_com_incorrect_mean_gather',initiation_time_com_incorrect_std_gather'];
+
+save(data_file_name, 'initiation_time_noncom_correct_mean_gather',...
+    'initiation_time_noncom_correct_std_gather','initiation_time_noncom_incorrect_mean_gather','initiation_time_noncom_incorrect_std_gather');
+
+fid = fopen(data_file_name_csv, 'w') ;
+fprintf(fid, '%s,', header{1,1:end-1}) ;
+fprintf(fid, '%s\n', header{1,end}) ;
+fclose(fid) ;
+dlmwrite(data_file_name_csv, fig_2c_data(1:end,:), '-append') ;
+
+
+
 
 
 if(export)
@@ -342,9 +362,6 @@ errorbar(eye_initiation_time_noncom_incorrect_mean_gather,...
     eye_initiation_time_noncom_correct_std_gather...
     ,'LineWidth', 2,'DisplayName',...
     'error','Color',[1 0 0]);
-
-% scatter([0,3.2,6.4,12.8,25.6,51.2],normalised_initiation_time_noncom_correct,'o','LineWidth',4,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor', [0 0 1]);
-% scatter([0,3.2,6.4,12.8,25.6,51.2],normalised_initiation_time_noncom_incorrect,'o','LineWidth',4,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor', [1 0 0]);
 
 xlim(axes1,[1 6]);
 set(axes1,'FontSize',20,'XTickLabel',...
@@ -370,6 +387,25 @@ fig_2d_data = [eye_initiation_time_noncom_correct_mean_gather',...
 
 save(data_file_name, 'eye_initiation_time_noncom_correct_mean_gather',...
     'eye_initiation_time_noncom_correct_std_gather','eye_initiation_time_noncom_incorrect_mean_gather','eye_initiation_time_noncom_incorrect_std_gather');
+
+fid = fopen(data_file_name_csv, 'w') ;
+fprintf(fid, '%s,', header{1,1:end-1}) ;
+fprintf(fid, '%s\n', header{1,end}) ;
+fclose(fid) ;
+dlmwrite(data_file_name_csv, fig_2d_data(1:end,:), '-append') ;
+
+%%% COM :
+
+
+data_file_name=[figures_path 'fig2_d2_' experiment_string '.mat'];
+data_file_name_csv=[figures_path 'fig2_d2_' experiment_string '.txt'];
+header = {'eye_init_z_correct,eye_init_z_correct_sem,eye_init_z_error,eye_init_z_error_sem'};
+
+fig_2d_data = [eye_initiation_time_noncom_correct_mean_gather',...
+    eye_initiation_time_noncom_correct_std_gather',eye_initiation_time_noncom_incorrect_mean_gather',eye_initiation_time_noncom_incorrect_std_gather'];
+
+save(data_file_name, 'eye_initiation_time_com_correct_mean_gather',...
+    'eye_initiation_time_com_correct_std_gather','eye_initiation_time_com_incorrect_mean_gather','eye_initiation_time_com_incorrect_std_gather');
 
 fid = fopen(data_file_name_csv, 'w') ;
 fprintf(fid, '%s,', header{1,1:end-1}) ;
@@ -517,7 +553,7 @@ return;
 end
 
 function [initiation_time_mean,initiation_time_std] = calculate_z_score(dynamics_and_results, coherence, ...
-    is_motor_correct, is_motor_com, is_first_correct, coupled,times_mean,times_std,is_eye)
+    is_motor_correct, is_motor_com, times_mean,times_std,is_eye)
 
 coherences = get_coherence_levels(dynamics_and_results);
 
@@ -526,73 +562,12 @@ if(~ismember(coherence,coherences))
 end
 
 counter = 0;
-% 
-% if(~coupled)
-%     for i = 1:size(dynamics_and_results,1)
-%         if(dynamics_and_results(i).coherence_level ==...
-%                 coherence && dynamics_and_results(i).is_motor_correct ==...
-%                 is_motor_correct && dynamics_and_results(i).is_motor_com == ...
-%                 is_motor_com && dynamics_and_results(i).motor_decision_made)
-%             counter = counter+1;
-%         end
-%     end
-% else
-%     for i = 1:size(dynamics_and_results,1)
-%         if(dynamics_and_results(i).coherence_level ==...
-%                 coherence && dynamics_and_results(i).is_motor_correct ==...
-%                 is_motor_correct && dynamics_and_results(i).is_motor_com == ...
-%                 is_motor_com && dynamics_and_results(i).is_first_correct == ...
-%                 is_first_correct && dynamics_and_results(i).motor_decision_made)
-%             counter = counter+1;
-%         end
-%     end
-% end
-% 
-% initiation_time_gather = zeros(1,counter);
-% 
-% j=1;
-% if(~coupled)
-%     for i = 1:size(dynamics_and_results,1)
-%         if(dynamics_and_results(i).coherence_level == ...
-%                 coherence && dynamics_and_results(i).is_motor_correct ==...
-%                 is_motor_correct && dynamics_and_results(i).is_motor_com ==...
-%                 is_motor_com && dynamics_and_results(i).motor_decision_made)
-%             if(is_eye)
-%                 value = dynamics_and_results(i).eye_initiation_time;
-%                 initiation_time_gather(j)=(value - times_mean)/times_std;
-%             else
-%                 value = dynamics_and_results(i).initiation_time;
-%                 initiation_time_gather(j)=(value - times_mean)/times_std;
-%             end
-%             
-%             j=j+1;
-%         end
-%     end
-% else
-%     for i = 1:size(dynamics_and_results,1)
-%         if(dynamics_and_results(i).coherence_level == ...
-%                 coherence && dynamics_and_results(i).is_motor_correct ==...
-%                 is_motor_correct && dynamics_and_results(i).is_motor_com ==...
-%                 is_motor_com && dynamics_and_results(i).is_first_correct ==...
-%                 is_first_correct && dynamics_and_results(i).motor_decision_made)
-%             if(is_eye)
-%                 value = dynamics_and_results(i).eye_initiation_time;
-%                 initiation_time_gather(j)=(value - times_mean)/times_std;
-%             else
-%                 value = dynamics_and_results(i).initiation_time;
-%                 initiation_time_gather(j)=(value - times_mean)/times_std;
-%             end
-%             j=j+1;
-%         end
-%     end
-% end
-
-
 
 for i = 1:size(dynamics_and_results,1)
     if(dynamics_and_results(i).coherence_level ==...
             coherence && dynamics_and_results(i).is_motor_correct ==...
-                 is_motor_correct && dynamics_and_results(i).motor_decision_made)
+                 is_motor_correct && dynamics_and_results(i).motor_decision_made ...
+                 && is_motor_com == dynamics_and_results(i).is_motor_com)
         counter = counter+1;
     end
 end
@@ -605,7 +580,8 @@ j=1;
 for i = 1:size(dynamics_and_results,1)
     if(dynamics_and_results(i).coherence_level == ...
             coherence && dynamics_and_results(i).is_motor_correct ==...
-                 is_motor_correct && dynamics_and_results(i).motor_decision_made)
+                 is_motor_correct && dynamics_and_results(i).motor_decision_made ... 
+                 && is_motor_com == dynamics_and_results(i).is_motor_com)
         if(is_eye)
             value = dynamics_and_results(i).eye_initiation_time;
             initiation_time_gather(j)=(value - times_mean)/times_std;

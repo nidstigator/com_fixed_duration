@@ -9,7 +9,7 @@ global export;
 global figures_path;
 global experiment_string;
 
-experiment_string = 'exp2';
+experiment_string = 'exp1';
 figures_path = '../figures_output/';
 
 legends = true;
@@ -29,9 +29,10 @@ global experiment_string;
 [counter, decision_result_gather, coherence_gather] = ...
     get_decision_result(dynamics_and_results);
 
+eye = false;
 
 [initiation_time_com_incorrect_mean_gather] = ...
-    calculate_mean_times(dynamics_and_results);
+    calculate_mean_times(dynamics_and_results, eye);
 
 V0 = counter;
 V1 = decision_result_gather;
@@ -62,6 +63,41 @@ dlmwrite(data_file_name_csv, fig_1_data(1:end,:), '-append') ;
 
 
 %%%%DONE WRITING
+eye = true;
+
+[initiation_time_com_incorrect_mean_gather] = ...
+    calculate_mean_times(dynamics_and_results, eye);
+
+V0 = counter;
+V1 = decision_result_gather;
+V2 = coherence_gather;
+V3 = normalise_custom(initiation_time_com_incorrect_mean_gather,max(initiation_time_com_incorrect_mean_gather),min(initiation_time_com_incorrect_mean_gather));
+
+matrix_work = [V0;V1;V2;V3]';
+
+%%%%WRITE to FILE:
+
+
+data_file_name=[figures_path 'Fig6b_' experiment_string '.mat'];
+data_file_name_csv=[figures_path 'Fig6b_' experiment_string '.txt'];
+
+header = {'is_com,coherence,eye_IT'};
+
+
+x = matrix_work;
+fig_1_data = x;
+
+save(data_file_name, 'x');
+
+fid = fopen(data_file_name_csv, 'w') ;
+fprintf(fid, '%s,', header{1,1:end-1}) ;
+fprintf(fid, '%s\n', header{1,end}) ;
+fclose(fid) ;
+dlmwrite(data_file_name_csv, fig_1_data(1:end,:), '-append') ;
+
+
+%%%%DONE WRITING
+
 end
 function[trial_number, decision_result_gather, coherence_gather] = ...
     get_decision_result(dynamics_and_results)
@@ -95,7 +131,7 @@ return;
 end
 
 function[initiation_time_gather] = ...
-    calculate_mean_times(dynamics_and_results)
+    calculate_mean_times(dynamics_and_results, eye)
 
 
 
@@ -114,7 +150,10 @@ initiation_time_gather = zeros(1,counter);
 j=1;
 for i = 1:size(dynamics_and_results,1)
     if(dynamics_and_results(i).motor_decision_made)
-        initiation_time_gather(j)=dynamics_and_results(i).initiation_time -dynamics_and_results(i).stim_onset ;
+        initiation_time_gather(j)=dynamics_and_results(i).initiation_time;
+        if(eye)
+            initiation_time_gather(j)=dynamics_and_results(i).eye_initiation_time;
+        end
         j=j+1;
     end
 end
