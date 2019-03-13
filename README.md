@@ -6,11 +6,11 @@ Currently, the experimental analysis is summarized in three Jupyter notebooks:
 - [basic psychometrics](https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/psychometrics.ipynb)
 - [initiation times](https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/initiation_times.ipynb)
 - [hand-eye lag analysis](https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/eye_hand_lags.ipynb)
-- [statistical model] (https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/r_stats.ipynb)
+- [statistical model](https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/r_stats.ipynb)
 
 The modelling results are summarised in:
 
-- [basic model fit] (https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/model_exp_sidebyside.ipynb)
+- [basic model fit](https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/model_exp_sidebyside.ipynb)
 
 
 These notebooks are in active development, and more notebooks with more advanced analyses are on the way
