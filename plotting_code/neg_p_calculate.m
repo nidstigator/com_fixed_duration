@@ -17,10 +17,10 @@ for i=1:n_of_coherences
         calculate_proportion_of_negative_IT_trials(dynamics_and_results,...
         coherence);
     
-    neg_p(i) = neg_p_number_correct/6000;
-    non_neg_p(i) = non_neg_p_number_correct/6000;
-    neg_p_error(i) = neg_p_number_error/6000;
-    non_neg_p_error(i) = non_neg_p_number_error/6000;
+    neg_p(i) = neg_p_number_correct/4000;
+    non_neg_p(i) = non_neg_p_number_correct/4000;
+    neg_p_error(i) = neg_p_number_error/4000;
+    non_neg_p_error(i) = non_neg_p_number_error/4000;
 end
 
 figure4=figure;
@@ -28,12 +28,12 @@ axes1 = axes('Parent',figure4);
 hold on;
 
 
-plot(neg_p,...
+plot(neg_p+neg_p_error,...
     'LineWidth', 2,'DisplayName',...
     'correct','Color',[0 0 1]);
-plot(neg_p_error,...
-    'LineWidth', 2,'DisplayName',...
-    'error','Color',[1 0 1]);
+% plot(neg_p_error,...
+%     'LineWidth', 2,'DisplayName',...
+%     'error','Color',[1 0 1]);
 
 xlim(axes1,[1 6]);
 set(axes1,'FontSize',20,'XTickLabel',...
