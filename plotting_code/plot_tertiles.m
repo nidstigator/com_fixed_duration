@@ -9,7 +9,7 @@ global export;
 global figures_path;
 global experiment_string;
 
-experiment_string = 'exp2';
+experiment_string = 'exp1';
 figures_path = '../figures_output/';
 
 legends = true;
@@ -29,10 +29,9 @@ global experiment_string;
 [counter, decision_result_gather, coherence_gather] = ...
     get_decision_result(dynamics_and_results);
 
-eye = false;
 
 [initiation_time_com_incorrect_mean_gather] = ...
-    calculate_mean_times(dynamics_and_results, eye);
+    calculate_mean_times(dynamics_and_results);
 
 V0 = counter;
 V1 = decision_result_gather;
@@ -48,40 +47,6 @@ data_file_name=[figures_path 'Fig6_' experiment_string '.mat'];
 data_file_name_csv=[figures_path 'Fig6_' experiment_string '.txt'];
 
 header = {'is_com,coherence,hand_IT'};
-
-
-x = matrix_work;
-fig_1_data = x;
-
-save(data_file_name, 'x');
-
-fid = fopen(data_file_name_csv, 'w') ;
-fprintf(fid, '%s,', header{1,1:end-1}) ;
-fprintf(fid, '%s\n', header{1,end}) ;
-fclose(fid) ;
-dlmwrite(data_file_name_csv, fig_1_data(1:end,:), '-append') ;
-
-
-%%%%DONE WRITING
-eye = true;
-
-[initiation_time_com_incorrect_mean_gather] = ...
-    calculate_mean_times(dynamics_and_results, eye);
-
-V0 = counter;
-V1 = decision_result_gather;
-V2 = coherence_gather;
-V3 = normalise_custom(initiation_time_com_incorrect_mean_gather,max(initiation_time_com_incorrect_mean_gather),min(initiation_time_com_incorrect_mean_gather));
-
-matrix_work = [V0;V1;V2;V3]';
-
-%%%%WRITE to FILE:
-
-
-data_file_name=[figures_path 'Fig6b_' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig6b_' experiment_string '.txt'];
-
-header = {'is_com,coherence,eye_IT'};
 
 
 x = matrix_work;
@@ -139,7 +104,7 @@ return;
 end
 
 function[initiation_time_gather] = ...
-    calculate_mean_times(dynamics_and_results, eye)
+    calculate_mean_times(dynamics_and_results)
 
 
 
@@ -159,9 +124,6 @@ j=1;
 for i = 1:size(dynamics_and_results,1)
     if(dynamics_and_results(i).motor_decision_made)
         initiation_time_gather(j)=dynamics_and_results(i).initiation_time;
-        if(eye)
-            initiation_time_gather(j)=dynamics_and_results(i).eye_initiation_time;
-        end
         j=j+1;
     end
 end
@@ -183,16 +145,23 @@ function [itiscom] = check_com_advanced_condition(dynamics_and_results, index)
 
 itiscom = false;
 
-x_traj = dynamics_and_results(index).y_6-dynamics_and_results(index).y_5;
 
+
+reached = find(dynamics_and_results(index).y_5>=17.4,1);
+if(dynamics_and_results(index).is_motor_correct)
+    reached = find(dynamics_and_results(index).y_6>=17.4,1);
+end
+
+x_traj = dynamics_and_results(index).y_6-dynamics_and_results(index).y_5;
 
 if(dynamics_and_results(index).is_motor_correct)
     x_traj = dynamics_and_results(index).y_5-dynamics_and_results(index).y_6;
 end
 
-smoothed_trajectory = filter(ones(1,50)/50,1,x_traj);
+smoothed_trajectory = filter(ones(1,200)/200,1,x_traj);
 delta_of_trajectory = diff(sign(smoothed_trajectory));
 
+plot(smoothed_trajectory)
 points_of_change = find(delta_of_trajectory);
 
 if(size(points_of_change,2)<2)
@@ -200,8 +169,8 @@ if(size(points_of_change,2)<2)
 end
 
 for i=size(points_of_change,2):-1:2
-    if(max(smoothed_trajectory(points_of_change(i-1):points_of_change(i)))>0)
-        sign_of_response = sign(smoothed_trajectory((dynamics_and_results(index).movement_duration + dynamics_and_results(index).initiation_time + 850+900)/dynamics_and_results(index).timestep_size));
+    if(max(smoothed_trajectory(points_of_change(i-1):points_of_change(i)))>2)
+        sign_of_response = sign(x_traj(reached));
         sign_of_max_point_in_bump =  sign(max(smoothed_trajectory(points_of_change(i-1):points_of_change(i))));
         
         
@@ -210,7 +179,6 @@ for i=size(points_of_change,2):-1:2
                 itiscom=true;
                 return;
             end
-
         end
 
     end

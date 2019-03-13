@@ -1,18 +1,12 @@
-clearvars;
-close all;
-
 global dt; global trial_length; global stim_onset; global stim_duration;
 global stim_offset;
 
-global x_gather;
-
 dt = 0.5;
 trial_length = 4000/dt;
-stim_onset = 900;
-stim_duration = 850;
-stim_offset = stim_duration+stim_onset;
+stim_duration = 800;
 
-x_gather = [];
+
+% % % % % % CHANGE THE THRESHOLD VALUE NEXT. 
 
 %%%%Threshold values:
 decision_module_threshold = 37.5;
@@ -34,6 +28,11 @@ end
 prompt = 'Please enter the number of trials: \n';
 n_of_trials = input(prompt);
 
+clearvars -except n_of_trials coherences coherence_string...
+    motor_target_threshold decision_module_threshold stim_offset ...
+    stim_duration trial_length dt stim_onset;
+close all;
+
 tStart=tic;
 
 
@@ -46,16 +45,15 @@ dynamics_and_results = repmat(struct('block_no',0,'block_size',0,...
     'trial_no',0,'coherence_level',0,'timestep_size',0,'trial_length',0,...
     'stim_onset',0,'stim_duration',0,'stim_offset',0,...
     'y_1',[],'y_2',[],'y_3',[],'y_4',[],'s_1',[],'s_2',[],'y_5',[],'y_6',[],...
-    'y_mc_hu',[], 'y_mc_lu',[], 'y_7',[],'y_8',[],...
+    'y_mc_hu',[], 'y_7',[],'y_8',[],...
     'decision_module_threshold',0,...
     'motor_target_threshold',0,'motor_maximum_value_left',0,...
     'motor_maximum_value_right',0,...
     'decision_module_crossed',false,...
     'is_motor_correct',false,...
-    'initation_time',0,'eye_initiation_time',0,...
+    'initation_time',0,...
     'movement_duration',0,...
-    'is_motor_com',false,'is_late_com',false,'motor_decision_made',false,...
-    'com_initiation_point_hand',0,'com_initiation_point_eye',0,'is_not_com_eye',0)...
+    'is_motor_com',false,'motor_decision_made',false)...
     , n_of_trials*size(coherences,2), 1);
 
 
@@ -72,13 +70,9 @@ for k = 1: no_of_blocks
         
         [y_1,y_2,s1,s2,decision_module_crossed,...
             y_mc_lu, initiation_time,...
-            initiation_time_eye] = nonlinear_decision_module_and_mc_integrate...
+            ] = nonlinear_decision_module_and_mc_integrate...
             (coh,decision_module_threshold);
-        
-        [y_3, y_4] = ...
-            eye_module_integrate(y_1,y_2,initiation_time_eye);
-        
-        
+
         [y_5,y_6] = ...
             hand_module_integrate(y_1,y_2,initiation_time);
         
@@ -88,12 +82,7 @@ for k = 1: no_of_blocks
         motor_decision_made=false;
         movement_duration = 0;
         is_motor_correct = false;
-        is_motor_com = false;
-        is_late_com = false;
-        is_not_com_eye= false;
-        com_initiation_point_hand = 0;
-        com_initiation_point_eye = 0;
-        
+        is_motor_com = false;      
         %%%%%%%%%%
         if(~(isempty(y_5) || isempty(y_6)))
             [is_motor_correct, motor_decision_made, movement_duration] = ...
@@ -101,13 +90,10 @@ for k = 1: no_of_blocks
                 (y_5,y_6,...
                 motor_target_threshold,initiation_time);
             
-            [is_motor_com, is_late_com, com_initiation_point_hand, com_initiation_point_eye, is_not_com_eye] = ...
-                check_com(y_5,y_6,y_4,y_3,motor_decision_made,motor_target_threshold,is_motor_correct);
+            [is_motor_com] = ...
+                check_com(y_5,y_6,motor_decision_made,motor_target_threshold);
         end
         
-        if(motor_decision_made==0)
-            temp=3;
-        end
         dynamics_and_results(index).block_no=k;
         dynamics_and_results(index).block_size=n_of_trials;
         dynamics_and_results(index).trial_no=i;
@@ -121,17 +107,9 @@ for k = 1: no_of_blocks
         dynamics_and_results(index).s_2=s2;
         dynamics_and_results(index).y_1=y_1;
         dynamics_and_results(index).y_2=y_2;
-        dynamics_and_results(index).y_3=y_3;
-        dynamics_and_results(index).y_4=y_4;
         dynamics_and_results(index).y_5=y_5;
         dynamics_and_results(index).y_6=y_6;
-        dynamics_and_results(index).y_7=zeros(1,trial_length);
-        dynamics_and_results(index).y_8=zeros(1,trial_length);
         dynamics_and_results(index).y_mc_hu=y_mc_lu;
-        dynamics_and_results(index).y_mc_lu=y_mc_lu;
-        dynamics_and_results(index).is_not_com_eye = is_not_com_eye;
-        dynamics_and_results(index).com_initiation_point_hand = com_initiation_point_hand;
-        dynamics_and_results(index).com_initiation_point_eye = com_initiation_point_eye;
         dynamics_and_results(index).decision_module_threshold = decision_module_threshold;
         dynamics_and_results(index).motor_target_threshold = motor_target_threshold;
         dynamics_and_results(index).motor_maximum_value_left = max(y_5);
@@ -140,15 +118,8 @@ for k = 1: no_of_blocks
         dynamics_and_results(index).motor_decision_made = motor_decision_made;
         dynamics_and_results(index).is_motor_correct = is_motor_correct;
         dynamics_and_results(index).movement_duration = movement_duration * dt;
-        dynamics_and_results(index).eye_initiation_time= (initiation_time_eye * dt) - stim_offset;
         dynamics_and_results(index).initiation_time =  (initiation_time * dt) - stim_offset;
-        %             dynamics_and_results(index).hand_response_time = total_response_time * dt;
         dynamics_and_results(index).is_motor_com = is_motor_com;
-        dynamics_and_results(index).is_late_com= is_late_com;
-        %             dynamics_and_results(index).hand_module_delay= hand_module_delay;
-        %             dynamics_and_results(index).click_delay= click_delay;
-        %             dynamics_and_results(index).mc_module_delay= mc_module_delay;
-        
         %%%%%%%%%%%
         
         %%%% Clear vars before next trial
@@ -157,8 +128,8 @@ for k = 1: no_of_blocks
             motor_preparation_module_threshold motor_target_threshold ...
             hand_module_delay mc_module_delay click_delay ...
             coh n_of_trials tStart filename coherences  ...
-            index across_trial_effect no_of_blocks eye_module_delay...
-            x_gather motor_preparation_module_threshold_eye saving_mode decision_module_crossed_hand
+            index across_trial_effect no_of_blocks ...
+            x_gather saving_mode decision_module_crossed_hand
         %%%%
         
         
@@ -180,13 +151,14 @@ clearvars tStart tElapsed;
 function [y_1,y_2,s1,s2,decision_module_crossed,...
     ...
     y_mc_lu,...
-    initiation_time,...
-    initiation_time_eye] = ...
+    initiation_time]= ...
     nonlinear_decision_module_and_mc_integrate(coh,decision_module_threshold)
 
 global dt; global trial_length; global stim_onset;
-global stim_offset;
+global stim_offset; global stim_duration;
 
+stim_onset =  randi([700 1000]);
+stim_offset = stim_duration+stim_onset;
 %%%%%%%%%%%% DECISION PARAMETERS
 %%%% Synaptic time and other constants
 
@@ -199,7 +171,7 @@ gamma = 0.641;  % Gamma
 
 a = 270; b = 108; d = 0.1540;  % Parameters for excitatory cells
 
-g = 1.12;
+g = 1.1;
 % Paramters to be varied
 
 mu0       = 30.0;      % External stimulus strength
@@ -228,12 +200,12 @@ Isyn1 = zeros(1,trial_length);
 Isyn2 = zeros(1,trial_length);
 
 decision_module_crossed = false;
-decision_module_crossed_hand = false;
+decision_module_crossed_again = false;
 
 gain_mc_lu = 1;     % Gain of input-output function (cf. Wong & Wang, 2006)
 tau_mc_lu = 150;    % Membrane time constant (cf. Wilson and Cowan, 1972)
 
-j0_mc_hu = 0.02;   % (excitation) Coupling constant from HU to eye module
+j0_mc_hu = 0.02;   % (excitation) Coupling constant from HU to SM module
 j_mc_dec_lu = 1;    % Coupling from decision module to excitatory mc
 j_self_mc = 0;      % Self excitation constant for MC.
 %%%%%%%%%%%%
@@ -244,7 +216,6 @@ y_mc_lu = zeros(1,trial_length);
 
 
 initiation_time = 0;
-initiation_time_eye = 0;
 
 
 for t=1:trial_length-1
@@ -260,8 +231,9 @@ for t=1:trial_length-1
         (JAext * mu0 * (1+coh/100)); % To population 2
     
     % Recurrent synaptic coupling constants
+    JN11 = 0.2440182353; JN22 = 0.2440182353;
+%     JN11 = 0.248; JN22 = 0.248;
 %     JN11 = 0.2609; JN22 = 0.2609;
-    JN11 = 0.248; JN22 = 0.248; % works except for 51.2% correct.
     JN12 = 0.0497; JN21 = 0.0497;
     
     % Resonse function of competiting excitatory population 1
@@ -308,100 +280,42 @@ for t=1:trial_length-1
             && ~decision_module_crossed)
         decision_module_crossed = true;
      
-        initiation_time_eye = t;
+        initiation_time = t;
     end
     
     if ((y_1(t) > decision_module_threshold+5 ...
             || y_2(t) > decision_module_threshold+5) ...
-            && ~decision_module_crossed_hand)
-        decision_module_crossed_hand = true;
-     
-        initiation_time = t;
+            && decision_module_crossed && t>(stim_offset/dt))
+        decision_module_crossed_again = true;
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%MC MODULE INTEGRATE:
-    % Conditional inhibitory control
-    hu_top_down_inhibition = ((stim_onset+600)/dt>t) * 1000;
+    % Conditional gating
+%     if(t>(stim_offset+100)/dt && ~decision_module_crossed_again)
+%     if(t>(stim_onset+700)/dt && t<(stim_onset+800)/dt)
+    hu_top_down_inhibition = ((stim_offset+100)/dt>t) * 1000;
     
     %         custom_top_down_inhibition = (((delayed-400)>response_time) && (response_time~=0)) * 3000;
     % %
-    custom_top_down_inhibition = (decision_module_crossed_hand) * 3000;
-    
+    custom_top_down_inhibition = (decision_module_crossed_again) * 3000;    
     % Total input coming in to MC population (LU and HU)
     i_lu_total = gain_mc_lu * (j_mc_dec_lu * (y_1(t) +...
         y_2(t)) + j_self_mc * y_mc_lu(t)) - hu_top_down_inhibition - custom_top_down_inhibition;
-    
-    
+
+
     % Input-Output function
     f_i_mc_lu = heaviside(i_lu_total) *  i_lu_total;
-    
+
     % Dynamical equations.
     y_mc_lu(t+1) = y_mc_lu(t) + (dt/tau_mc_lu) * ...
         (-y_mc_lu(t) +f_i_mc_lu);
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%MC MODULE INTEGRATE END
+    %%%%%%%%%%%%%%%%%%%%%%%%%%MC MODULE INTEGRATE END
+
+%     end
+    
 end
 return;
 
 end
-
-function [y_3,y_4] =  eye_module_integrate(y_7,y_8,initiation_time)
-
-global dt; global trial_length;
-
-
-if(initiation_time==0)
-    y_3=[];
-    y_4=[];
-    return;
-end
-
-j_dec_eye = 1.5;        % Coupling strength from decision module to eye module
-eye_inhibition = 1;   % Inhibition strength
-j_self_eye = 0;        % Self excitation strength
-tau_eye = 20;          % Coupling constant for eye
-gain_eye = 1;          % Gain of input-output function
-
-% Initialise state vectors with zeros (for better performance)
-y_3 = zeros(1,trial_length);
-y_4 = zeros(1,trial_length);
-
-
-% Single trial loop start
-for t=1:trial_length-1
-    
-    %TODO:Check this
-    inhibitory_control = (t<initiation_time) * 5000 ;
-    
-    % Total input coming in to left eye neural population
-    i3_total = gain_eye * (-eye_inhibition * y_4(t) + j_self_eye ...
-        * y_3(t) + j_dec_eye* y_7(t)) - inhibitory_control;
-    
-    % Input-output function
-    f_i3_total = heaviside(i3_total) * i3_total;
-    
-    
-    % Dynamical equation for left eye neural population
-    y_3(t+1) = y_3(t) + ((dt/tau_eye) * (-y_3(t) + f_i3_total));
-    
-    % Total input coming in to left eye neural population
-    i4_total = gain_eye* (-eye_inhibition * y_3(t)+ j_self_eye ...
-        * y_4(t) + j_dec_eye * y_8(t)) - inhibitory_control;
-    
-    
-    % Input-output function
-    f_i4_total = heaviside(i4_total) * i4_total;
-    
-    
-    % Dynamical equation for left eye neural population
-    y_4(t+1) = y_4(t) + ((dt/tau_eye) * (-y_4(t) + f_i4_total));
-    
-    
-end % Single trial loop end
-
-return;
-
-
-
-end % Function end
 
 function [y_5,y_6] =  hand_module_integrate(y_7,y_8,initiation_time)
 
@@ -414,10 +328,10 @@ if(initiation_time==0)
     return;
 end
 
-j_dec_hand = 1.5;     % Coupling strength from decision module to eye module
-hand_inhibition = 1;% Inhibition strength
+j_dec_hand = 1.5;     % Coupling strength from decision module to hand module
+hand_inhibition = 2;% Inhibition strength
 j_self_hand = 0;    % Self excitation strength
-tau_hand = 50;      % Coupling constant for eye
+tau_hand = 50;      % Coupling constant for hand
 gain_hand = 1;      % Gain of input-output function
 
 % Initialise state vectors with zeros (for better performance)
@@ -429,30 +343,29 @@ y_6 = zeros(1,trial_length);
 for t=1:trial_length-1
     
     %TODO:Check this
-    inhibitory_control = (t<initiation_time) * 5000;
-    
-    % Total input coming in to left eye neural population
-    i5_total = gain_hand * (-hand_inhibition * y_6(t) + j_self_hand ...
-        * y_5(t) + j_dec_hand* y_7(t)) - inhibitory_control;
-    
-    % Input-output function
-    f_i5_total = heaviside(i5_total) * i5_total;
-    
-    % Dynamical equation for left eye neural population
-    y_5(t+1) = y_5(t) + ((dt/tau_hand) * (-y_5(t) + f_i5_total));
-    
-    
-    % Total input coming in to left eye neural population
-    i6_total = gain_hand* (-hand_inhibition * y_5(t)+ j_self_hand ...
-        * y_6(t) + j_dec_hand * y_8(t)) - inhibitory_control;
-    
-    
-    f_i6_total = heaviside(i6_total) * i6_total;
-    
-    
-    % Dynamical equation for left eye neural population
-    y_6(t+1) = y_6(t) + ((dt/tau_hand) * (-y_6(t) + f_i6_total));
-    
+    if(t>initiation_time)
+        % Total input coming in to left hand neural population
+        i5_total = gain_hand * (-hand_inhibition * y_6(t) + j_self_hand ...
+            * y_5(t) + j_dec_hand* y_7(t)) ;
+        
+        % Input-output function
+        f_i5_total = heaviside(i5_total) * i5_total;
+        
+        % Dynamical equation for left hand neural population
+        y_5(t+1) = y_5(t) + ((dt/tau_hand) * (-y_5(t) + f_i5_total));
+        
+        
+        % Total input coming in to left hand neural population
+        i6_total = gain_hand* (-hand_inhibition * y_5(t)+ j_self_hand ...
+            * y_6(t) + j_dec_hand * y_8(t)) ;
+        
+        
+        f_i6_total = heaviside(i6_total) * i6_total;
+        
+        
+        % Dynamical equation for left hand neural population
+        y_6(t+1) = y_6(t) + ((dt/tau_hand) * (-y_6(t) + f_i6_total));
+    end
 end % Single trial loop end
 
 return;
@@ -487,35 +400,19 @@ return;
 
 end
 
-function [is_motor_com, is_late_com, com_initiation_point_hand, com_initiation_point_eye, is_not_com_eye] = check_com(y_5,y_6,y_4,y_3,motor_decision_made,motor_target_threshold,is_motor_correct)
+function [is_motor_com] = check_com(y_5,y_6,motor_decision_made,motor_target_threshold)
 global trial_length;
 
 is_motor_com = false;
-is_not_com_eye = false;
-is_late_com = false;
-com_initiation_point_hand= 0;
-com_initiation_point_eye= 0;
 if(~motor_decision_made)
     return;
 end
 x_traj = y_5-y_6;
 
-x_traj_eye = y_3-y_4;
-
 smoothed_trajectory = filter(ones(1,50)/50,1,x_traj);
 
+% smoothed_trajectory = x_traj;
 delta_of_trajectory = diff(sign(smoothed_trajectory));
-
-left_reached = find(y_5>=motor_target_threshold,1);
-right_reached = find(y_6>=motor_target_threshold,1);
-
-if(isempty(left_reached))
-    left_reached=0;
-end
-
-if(isempty(right_reached))
-    right_reached=0;
-end
 
 points_of_change = find(delta_of_trajectory);
 
@@ -523,11 +420,10 @@ if(size(points_of_change,2)<2)
     return;
 end
 
-%take the last two points of change.
+
+%take the last two points of change. 
 point_of_change = points_of_change(end);
 
-
-%difference between last two points of change is 50, then something is
 for i = point_of_change:trial_length-1
     if(y_5(i)>=motor_target_threshold || y_6(i)>=motor_target_threshold)
         is_motor_com = true;
@@ -535,29 +431,25 @@ for i = point_of_change:trial_length-1
     end
 end
 
-%check if correct late Change-of-Mind
-if(is_motor_com && is_motor_correct && point_of_change > left_reached && left_reached ~=0)
-    is_late_com = true;
-end
 
-%check if incorrect late Change-of-Mind
-if(is_motor_com && ~is_motor_correct && point_of_change > right_reached && right_reached ~=0)
-    is_late_com = true;
-end
-
-com_initiation_point_hand = point_of_change;
-
-
-smoothed_trajectory_eye = filter(ones(1,50)/50,1,x_traj_eye);
-delta_of_trajectory_eye = diff(sign(smoothed_trajectory_eye));
-points_of_change_eye = find(delta_of_trajectory_eye);
-if(size(points_of_change_eye,2)<2)
-    is_not_com_eye = true;
-    return;
-end
-
-point_of_change_eye = points_of_change_eye(end);
-com_initiation_point_eye = point_of_change_eye;
+% if(is_motor_com)
+%     it_is_really_com = false;
+%     firing_rate_threshold_com = 2;
+%     for i=size(points_of_change,2):-1:2
+%         if(max(smoothed_trajectory(points_of_change(i-1):points_of_change(i)))>0)
+%             sign_of_response = sign(smoothed_trajectory(((movement_duration*dt) + (initiation_time*dt) + stim_duration+ stim_onset)/dt));
+%             sign_of_max_point_in_bump =  sign(max(smoothed_trajectory(points_of_change(i-1):points_of_change(i))));
+%   
+%             if(sign_of_response *  sign_of_max_point_in_bump == -1)
+%                 if(max(abs(smoothed_trajectory(points_of_change(i-1):points_of_change(i))))>firing_rate_threshold_com)
+%                     it_is_really_com=true;
+%                 end     
+%             end
+%             
+%         end
+%         is_motor_com = it_is_really_com;
+%     end
+% end
 
 end
 
