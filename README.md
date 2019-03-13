@@ -1,22 +1,40 @@
-<snippet>
-  <content><![CDATA[
-# ${1: Neural Circuit Model for Change-of-Mind and Decision Confidence}
+# Changes-of-mind model and experiment
+Data analysis code for RDK experiment with eye- and hand-tracking, alongside a neural circuit model
 
-This repository hosts simulation and data analysis scripts.
-Currently, the model is developed in Matlab. a Python version is available on a local branch that's still under development.
+Currently, the experimental analysis is summarized in three Jupyter notebooks:
+
+- [basic psychometrics](https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/psychometrics.ipynb)
+- [initiation times](https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/initiation_times.ipynb)
+- [hand-eye lag analysis](https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/eye_hand_lags.ipynb)
+- [statistical model] (https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/r_stats.ipynb)
+
+The modelling results are summarised in:
+
+- [basic model fit] (https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/model_exp_sidebyside.ipynb)
 
 
-## Contributing
-1. Fork it!
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request :D
+These notebooks are in active development, and more notebooks with more advanced analyses are on the way
 
-## Credits
-TODO: Write credits
-## License
-TODO: Write license
-]]></content>
-  <tabTrigger>readme</tabTrigger>
-</snippet>
+## Prerequisites
+To run the code, you'd need Python 3.5+; the most convenient way of getting it is to install the latest version of [Anaconda](https://www.anaconda.com/download/), which also includes all the dependencies:
+- Jupyter Notebook 1.0.0+
+- NumPy 1.12.1+
+- SciPy 0.19.1+
+- pandas 0.20.1+
+- matplotlib 2.0.2+
+- seaborn 0.7.1+
+
+You also need R and IRKernel in order to run the stats notebook. 
+
+Finally, you need Matlab 2017+ in order to run the model simulations. Those simulation files might be ported to python at some stage.
+
+
+________________________________________________
+As the project is in active development, it is best to regulary update these packages to the recent versions. This is easily done in Anaconda by one-liner 
+
+> conda update --all
+
+With minor modifications this project can be run under Python 2.7 (however, we recommend to use Python 3, as Python 2 is going to be [discontinued in the near future](https://pythonclock.org/))
+
+If you're not familiar with Jupyter Notebooks, here is a good [starting guide](http://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/index.html)
+
