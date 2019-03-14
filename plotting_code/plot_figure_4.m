@@ -16,34 +16,66 @@ is_first_correct= true;
 coherence = 3.2;
 is_motor_correct = true;
 is_motor_com = true;
-is_late_com = true;
 
 
-[com_correct_gather]= gather_trajectories(dynamics_and_results,coherence,...
+
+[average, com_correct_gather]= gather_trajectories(dynamics_and_results,coherence,...
+    is_motor_com, is_motor_correct);
+
+coherence = 3.2;
+is_motor_correct = true;
+is_motor_com = false;
+
+[average_noncom, non_com_correct_gather]= gather_trajectories(dynamics_and_results,coherence,...
     is_motor_com, is_motor_correct);
 
 % plot_all_trajectories(com_correct_gather,0,is_motor_com,is_motor_correct);
 
+header = {'timestamp,mouse_x'};
+
 data_file_name=[figures_path 'Fig4_' experiment_string '.mat'];
 data_file_name_csv=[figures_path 'Fig4_' experiment_string '.txt'];
 
-header = {'timestamp,mouse_x'};
-
-
 traj_index = randi([1 size(com_correct_gather,1)]);
-
 x = com_correct_gather(traj_index,:); 
+
 fig_1_data = [linspace(1,8000,8000); x]';
 
-save(data_file_name, 'x');
+write_to_file(data_file_name, data_file_name_csv, header, x, fig_1_data)
 
-fid = fopen(data_file_name_csv, 'w') ;
-fprintf(fid, '%s,', header{1,1:end-1}) ;
-fprintf(fid, '%s\n', header{1,end}) ;
-fclose(fid) ;
-dlmwrite(data_file_name_csv, fig_1_data(1:end,:), '-append') ;
 
-function [x_traj_gather] = gather_trajectories(dynamics_and_results,...
+
+data_file_name=[figures_path 'Fig4_b' experiment_string '.mat'];
+data_file_name_csv=[figures_path 'Fig4_b' experiment_string '.txt'];
+
+x = average;
+fig_1_data = [linspace(1,8000,8000); x]';
+
+write_to_file(data_file_name, data_file_name_csv, header, x, fig_1_data)
+
+
+data_file_name=[figures_path 'Fig5_' experiment_string '.mat'];
+data_file_name_csv=[figures_path 'Fig5_' experiment_string '.txt'];
+
+traj_index = randi([1 size(non_com_correct_gather,1)]);
+x = non_com_correct_gather(traj_index,:); 
+fig_1_data = [linspace(1,8000,8000); x]';
+
+write_to_file(data_file_name, data_file_name_csv, header, x, fig_1_data)
+
+
+%%% Begin write:
+traj_index = randi([1 size(average_noncom,1)]);
+x = average_noncom(traj_index,:); 
+fig_1_data = [linspace(1,8000,8000); x]';
+data_file_name=[figures_path 'Fig5_b' experiment_string '.mat'];
+data_file_name_csv=[figures_path 'Fig5_b' experiment_string '.txt'];
+
+write_to_file(data_file_name, data_file_name_csv, header, x, fig_1_data)
+
+
+
+function [average, x_traj_gather] = gather_trajectories(dynamics_and_results,...
     coherence, is_motor_com, is_motor_correct)
 
 x_lim=1920; %pixels.
@@ -67,7 +99,10 @@ for i = 1:size(dynamics_and_results,1)
             if(check_com_advanced_condition(dynamics_and_results, i))
                 counter = counter+1;
             end
+        else
+            counter = counter+1;
         end
+        
     end
 end
 
@@ -83,18 +118,24 @@ for i = 1:size(dynamics_and_results,1)
             if(check_com_advanced_condition(dynamics_and_results, i))
                 y_5_gather(j,:)=dynamics_and_results(i).y_5;
                 y_6_gather(j,:)=dynamics_and_results(i).y_6;
+                j=j+1;
             end
+        else
+            y_5_gather(j,:)=dynamics_and_results(i).y_5;
+            y_6_gather(j,:)=dynamics_and_results(i).y_6;
+            j=j+1;
         end
-        j=j+1;
     end
 end
 
 if(is_motor_correct)
     tempo = (y_6_gather-y_5_gather);
     x_traj_gather = tempo * (target_x_position/max(tempo(:)));
+    average(1,:)= mean(tempo);
 else
     tempo = (y_5_gather-y_6_gather);
     x_traj_gather = tempo * (target_x_position/max(tempo(:)));
+    average(1,:)= mean(tempo);
 end
 
 return;
