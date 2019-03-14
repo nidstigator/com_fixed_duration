@@ -37,9 +37,9 @@ data_file_name=[figures_path 'Fig4_' experiment_string '.mat'];
 data_file_name_csv=[figures_path 'Fig4_' experiment_string '.txt'];
 
 traj_index = randi([1 size(com_correct_gather,1)]);
-x = com_correct_gather(traj_index,:); 
+x = com_correct_gather(traj_index,1:2:end); 
 
-fig_1_data = [linspace(1,8000,8000); x]';
+fig_1_data = [linspace(1,4000,4000); x]';
 
 write_to_file(data_file_name, data_file_name_csv, header, x, fig_1_data)
 
@@ -48,8 +48,8 @@ write_to_file(data_file_name, data_file_name_csv, header, x, fig_1_data)
 data_file_name=[figures_path 'Fig4_b' experiment_string '.mat'];
 data_file_name_csv=[figures_path 'Fig4_b' experiment_string '.txt'];
 
-x = average;
-fig_1_data = [linspace(1,8000,8000); x]';
+x = average(1:2:end);
+fig_1_data = [linspace(1,4000,4000); x]';
 
 write_to_file(data_file_name, data_file_name_csv, header, x, fig_1_data)
 
@@ -58,16 +58,16 @@ data_file_name=[figures_path 'Fig5_' experiment_string '.mat'];
 data_file_name_csv=[figures_path 'Fig5_' experiment_string '.txt'];
 
 traj_index = randi([1 size(non_com_correct_gather,1)]);
-x = non_com_correct_gather(traj_index,:); 
-fig_1_data = [linspace(1,8000,8000); x]';
+x = non_com_correct_gather(traj_index,1:2:end); 
+fig_1_data = [linspace(1,4000,4000); x]';
 
 write_to_file(data_file_name, data_file_name_csv, header, x, fig_1_data)
 
 
 %%% Begin write:
 traj_index = randi([1 size(average_noncom,1)]);
-x = average_noncom(traj_index,:); 
-fig_1_data = [linspace(1,8000,8000); x]';
+x = average_noncom(1:2:end);
+fig_1_data = [linspace(1,4000,4000); x]';
 data_file_name=[figures_path 'Fig5_b' experiment_string '.mat'];
 data_file_name_csv=[figures_path 'Fig5_b' experiment_string '.txt'];
 
@@ -92,6 +92,7 @@ end
 
 counter = 0;
 trial_length =  dynamics_and_results(1).trial_length;
+motor_target_threshold = 37.5;
 
 for i = 1:size(dynamics_and_results,1)
     if(dynamics_and_results(i).coherence_level == coherence && dynamics_and_results(i).is_motor_correct == is_motor_correct && dynamics_and_results(i).is_motor_com == is_motor_com && dynamics_and_results(i).motor_decision_made)
@@ -129,13 +130,13 @@ for i = 1:size(dynamics_and_results,1)
 end
 
 if(is_motor_correct)
-    tempo = (y_6_gather-y_5_gather);
-    x_traj_gather = tempo * (target_x_position/max(tempo(:)));
-    average(1,:)= mean(tempo);
+    trajectory_nonscaled = (y_6_gather-y_5_gather);
+    x_traj_gather = trajectory_nonscaled * (target_x_position/motor_target_threshold);
+    average(1,:)= mean(x_traj_gather);
 else
-    tempo = (y_5_gather-y_6_gather);
-    x_traj_gather = tempo * (target_x_position/max(tempo(:)));
-    average(1,:)= mean(tempo);
+    trajectory_nonscaled = (y_5_gather-y_6_gather);
+    x_traj_gather = trajectory_nonscaled * (target_x_position/motor_target_threshold);
+    average(1,:)= mean(x_traj_gather);
 end
 
 return;
