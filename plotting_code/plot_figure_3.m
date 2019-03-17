@@ -4,8 +4,8 @@ global export;
 global figures_path;
 global experiment_string;
 
-experiment_string = 'exp1';
-figures_path = '../figures_output/';
+experiment_string = '';
+figures_path = '../figures_output/csv/';
 
 legends = true;
 titles = false;
@@ -90,15 +90,11 @@ savefig(export_path);
 end
 %%%%%%%%
 
-data_file_name=[figures_path 'Fig3_ab_' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig3_ab_' experiment_string '.txt'];
+data_file_name_csv=[figures_path 'p_com' experiment_string '.txt'];
 header = {'p_com_all,p_com_correct,pcom_incorrect'};
 
 fig3_ab_data = [p_com',...
     p_com_correct',p_com_incorrect'];
-
-save(data_file_name, 'p_com',...
-    'p_com_correct','p_com_incorrect');
 
 fid = fopen(data_file_name_csv, 'w') ;
 fprintf(fid, '%s,', header{1,1:end-1}) ;

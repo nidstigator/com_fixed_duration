@@ -1,6 +1,4 @@
-function []=  write_to_file(mat_name, csv_name,  header, matdata, csvdata)
-
-save(mat_name, 'matdata');
+function []=  write_to_file(csv_name,  header, csvdata)
 
 fid = fopen(csv_name, 'w') ;
 fprintf(fid, '%s,', header{1,1:end-1}) ;

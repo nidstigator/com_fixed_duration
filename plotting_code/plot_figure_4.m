@@ -4,8 +4,8 @@ global export;
 global figures_path;
 global experiment_string;
 
-experiment_string = 'exp1';
-figures_path = '../figures_output/';
+experiment_string = '';
+figures_path = '../figures_output/csv/';
 
 legends = true;
 titles = false;
@@ -33,45 +33,41 @@ is_motor_com = false;
 
 header = {'timestamp,mouse_x'};
 
-data_file_name=[figures_path 'Fig4_' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig4_' experiment_string '.txt'];
+data_file_name_csv=[figures_path 'x_traj_com' experiment_string '.txt'];
 
 traj_index = randi([1 size(com_correct_gather,1)]);
 x = com_correct_gather(traj_index,1:2:end); 
 
 fig_1_data = [linspace(1,4000,4000); x]';
 
-write_to_file(data_file_name, data_file_name_csv, header, x, fig_1_data)
+write_to_file(data_file_name_csv, header, fig_1_data)
 
 
 
-data_file_name=[figures_path 'Fig4_b' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig4_b' experiment_string '.txt'];
+data_file_name_csv=[figures_path 'x_traj_com_mean' experiment_string '.txt'];
 
 x = average(1:2:end);
 fig_1_data = [linspace(1,4000,4000); x]';
 
-write_to_file(data_file_name, data_file_name_csv, header, x, fig_1_data)
+write_to_file(data_file_name_csv, header, fig_1_data)
 
 
-data_file_name=[figures_path 'Fig5_' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig5_' experiment_string '.txt'];
+data_file_name_csv=[figures_path 'x_traj_non_com' experiment_string '.txt'];
 
 traj_index = randi([1 size(non_com_correct_gather,1)]);
 x = non_com_correct_gather(traj_index,1:2:end); 
 fig_1_data = [linspace(1,4000,4000); x]';
 
-write_to_file(data_file_name, data_file_name_csv, header, x, fig_1_data)
+write_to_file(data_file_name_csv, header, fig_1_data)
 
 
 %%% Begin write:
 traj_index = randi([1 size(average_noncom,1)]);
 x = average_noncom(1:2:end);
 fig_1_data = [linspace(1,4000,4000); x]';
-data_file_name=[figures_path 'Fig5_b' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig5_b' experiment_string '.txt'];
+data_file_name_csv=[figures_path 'x_traj_non_com_mean' experiment_string '.txt'];
 
-write_to_file(data_file_name, data_file_name_csv, header, x, fig_1_data)
+write_to_file(data_file_name_csv, header, fig_1_data)
 
 
 
@@ -135,6 +131,16 @@ if(is_motor_correct)
     average(1,:)= mean(x_traj_gather);
 else
     trajectory_nonscaled = (y_5_gather-y_6_gather);
+    x_traj_gather = trajectory_nonscaled * (target_x_position/motor_target_threshold);
+    average(1,:)= mean(x_traj_gather);
+end
+
+if(~is_motor_com)
+    if(is_motor_correct)
+        trajectory_nonscaled = y_6_gather;
+    else
+        trajectory_nonscaled = y_5_gather;
+    end
     x_traj_gather = trajectory_nonscaled * (target_x_position/motor_target_threshold);
     average(1,:)= mean(x_traj_gather);
 end

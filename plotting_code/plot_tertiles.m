@@ -9,8 +9,8 @@ global export;
 global figures_path;
 global experiment_string;
 
-experiment_string = 'exp1';
-figures_path = '../figures_output/';
+experiment_string = '';
+figures_path = '../figures_output/csv/';
 
 legends = true;
 titles = false;
@@ -43,8 +43,7 @@ matrix_work = [V0;V1;V2;V3]';
 %%%%WRITE to FILE:
 
 
-data_file_name=[figures_path 'Fig6_' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig6_' experiment_string '.txt'];
+data_file_name_csv=[figures_path 'model_tertiles' experiment_string '.txt'];
 
 header = {'is_com,coherence,hand_IT'};
 
@@ -52,7 +51,6 @@ header = {'is_com,coherence,hand_IT'};
 x = matrix_work;
 fig_1_data = x;
 
-save(data_file_name, 'x');
 
 fid = fopen(data_file_name_csv, 'w') ;
 fprintf(fid, '%s,', header{1,1:end-1}) ;

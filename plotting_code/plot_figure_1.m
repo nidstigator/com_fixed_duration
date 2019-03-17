@@ -9,9 +9,9 @@ global export;
 global figures_path;
 global experiment_string;
 
-experiment_string = 'exp1';
+experiment_string = '';
 
-figures_path = '../figures_output/';
+figures_path = '../figures_output/csv/';
 
 legends = true;
 titles = false;
@@ -36,7 +36,18 @@ is_motor_com = false;
 is_single_trial = false;
 
 
-plot_main_panel_modified(y_1,y_2,y_5,y_6,y_mc_hu,y_1_25,y_2_25,y_5_25,y_6_25,y_mc_hu_25)
+plot_main_panel_modified(y_1,y_2,y_5,y_6,y_mc_hu,y_1_25,y_2_25,y_5_25,y_6_25,y_mc_hu_25,is_motor_com)
+
+is_motor_correct = true;
+is_motor_com = true;
+
+[y_1, y_2, y_mc_hu, y_5, y_6] = ...
+    calculate_mean_activity(dynamics_and_results, 3.2, ...
+    is_motor_correct, is_motor_com);
+[y_1_25, y_2_25, y_mc_hu_25, y_5_25, y_6_25] = ...
+    calculate_mean_activity(dynamics_and_results, 25.6, ...
+    is_motor_correct, is_motor_com);
+plot_main_panel_modified(y_1,y_2,y_5,y_6,y_mc_hu,y_1_25,y_2_25,y_5_25,y_6_25,y_mc_hu_25,is_motor_com)
 
 plot_x_pattern(dynamics_and_results,normalised);
 
@@ -132,18 +143,14 @@ xlabel(x_string);
 pubgraph(figure7,18,4,'w')
 
 
-data_file_name_1=[figures_path 'Fig1_d1_' experiment_string '.mat'];
-data_file_name_2=[figures_path 'Fig1_d2_' experiment_string '.mat'];
-data_file_name_csv_1=[figures_path 'Fig1_d1_' experiment_string '.txt'];
-data_file_name_csv_2=[figures_path 'Fig1_d2_' experiment_string '.txt'];
+data_file_name_csv_1=[figures_path 'uncertainty_vs_accuracy_spline' experiment_string '.txt'];
+data_file_name_csv_2=[figures_path 'uncertainty_vs_accuracy' experiment_string '.txt'];
 header_1 = {'x_fit,y_fit'};
 header_2 = {'x_real,y_real'};
 
 fig_1_data_1 = [x',y'];
 fig_1_data_2 = [confidence_max',p_correct'];
 
-save(data_file_name_1, 'x','y');
-save(data_file_name_2, 'confidence_max','p_correct');
 
 fid = fopen(data_file_name_csv_1, 'w') ;
 fprintf(fid, '%s,', header_1{1,1:end-1}) ;
@@ -253,13 +260,10 @@ ylabel(y_string);
 pubgraph(figure1,18,4,'w')
 ylim([-1,110]);
 
-data_file_name=[figures_path 'Fig1_c_' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig1_c_' experiment_string '.txt'];
+data_file_name_csv=[figures_path 'uncertainty_vs_coherence' experiment_string '.txt'];
 header = {'x_correct,x_correct_sem,x_error,x_error_sem'};
 
 fig_1_data = [x_correct_max'*100,x_correct_max_std'*100,x_incorrect_max'*100,x_incorrect_max_std'*100,];
-
-save(data_file_name, 'x_correct_max','x_correct_max_std','x_incorrect_max','x_incorrect_max_std');
 
 fid = fopen(data_file_name_csv, 'w') ;
 fprintf(fid, '%s,', header{1,1:end-1}) ;
@@ -284,7 +288,7 @@ end
 
 end
 
-function plot_main_panel_modified(y_1,y_2,y_5,y_6,y_mc_hu,y_1_25,y_2_25,y_5_25,y_6_25,y_mc_hu_25)
+function plot_main_panel_modified(y_1,y_2,y_5,y_6,y_mc_hu,y_1_25,y_2_25,y_5_25,y_6_25,y_mc_hu_25,is_motor_com)
 
 global legends;
 global titles;
@@ -355,18 +359,16 @@ if(titles)
     title(['Motor output' title_string]);
 end
 
+com_string = 'non_com_';
+if(is_motor_com)
+    com_string = 'com';
+end
 
-
-
-data_file_name=[figures_path 'Fig1_b_' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig1_b_' experiment_string '.txt'];
+data_file_name_csv=[figures_path com_string 'activity_traces' experiment_string '.txt'];
 header = {'y_1_25','y_2_25','y_5_25','y_6_25','y_mc_hu_25','y_1','y_2','y_5','y_6','y_mc_hu'};
 
 fig_1_data = [y_1_25', y_2_25', y_5_25', y_6_25', y_mc_hu_25', y_1', y_2', y_5', y_6', y_mc_hu'];
 
-save(data_file_name, 'y_1_25','y_2_25','y_5_25'...
-    ,'y_5_25','y_6_25','y_mc_hu_25','y_1','y_2',...
-    'y_5','y_6','y_mc_hu');
 
 fid = fopen(data_file_name_csv, 'w') ;
 fprintf(fid, '%s,', header{1,1:end-1}) ;

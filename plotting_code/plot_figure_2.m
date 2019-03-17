@@ -7,8 +7,8 @@ global export;
 global figures_path;
 global experiment_string;
 
-experiment_string = 'exp1';
-figures_path = '../figures_output/';
+experiment_string = '';
+figures_path = '../figures_output/csv/';
 
 legends = true;
 titles = false;
@@ -148,10 +148,9 @@ end
 if(titles)
     title(title_string);
 end
-% data_file_name_1=[figures_path 'Fig2_a1_' experiment_string '.mat'];
-data_file_name_2=[figures_path 'Fig2_a2_' experiment_string '.mat'];
+data_file_name_2=[figures_path 'psychometric_function' experiment_string '.mat'];
 % data_file_name_csv_1=[figures_path 'Fig2_a1_' experiment_string '.txt'];
-data_file_name_csv_2=[figures_path 'Fig2_a2_' experiment_string '.txt'];
+data_file_name_csv_2=[figures_path 'psychometric_function' experiment_string '.txt'];
 % header_1 = {'pcorrect_x_fit,pcorrect_y_fit'};
 header_2 = {'pcorrect_x_real,pcorrect_y_real'};
 
@@ -160,8 +159,6 @@ coherences = [0,3.2,6.4,12.8,25.6,51.2];
 % fig_1_data_1 = [x',y'];
 fig_1_data_2 = [coherences',p_correct'];
 
-% save(data_file_name_1, 'x','y');
-save(data_file_name_2, 'coherences','p_correct');
 
 % fid = fopen(data_file_name_csv_1, 'w') ;
 % fprintf(fid, '%s,', header_1{1,1:end-1}) ;
@@ -178,10 +175,8 @@ dlmwrite(data_file_name_csv_2, fig_1_data_2(1:end,:), '-append') ;
 
 %%% COM save:
 
-% data_file_name_1=[figures_path 'Fig2_b1_' experiment_string '.mat'];
-data_file_name_2=[figures_path 'Fig2_b2_' experiment_string '.mat'];
 % data_file_name_csv_1=[figures_path 'Fig2_b1_' experiment_string '.txt'];
-data_file_name_csv_2=[figures_path 'Fig2_b2_' experiment_string '.txt'];
+data_file_name_csv_2=[figures_path 'psychometric_function_com' experiment_string '.txt'];
 % header_1 = {'pcorrect_com_x_fit,pcorrect_com_y_fit'};
 header_2 = {'pcorrect_x_real,pcorrect_y_real'};
 
@@ -190,8 +185,6 @@ coherences = [0,3.2,6.4,12.8,25.6,51.2];
 % fig_1_data_1 = [x_com',y_com'];
 fig_1_data_2 = [coherences',p_correct_com'];
 
-% save(data_file_name_1, 'x_com','y_com');
-save(data_file_name_2, 'coherences','p_correct_com');
 
 % fid = fopen(data_file_name_csv_1, 'w') ;
 % fprintf(fid, '%s,', header_1{1,1:end-1}) ;
@@ -266,15 +259,12 @@ if(titles)
     title(title_string);
 end
 
-data_file_name=[figures_path 'Fig2_c_' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig2_c_' experiment_string '.txt'];
+
+data_file_name_csv=[figures_path 'response_times_non_com' experiment_string '.txt'];
 header = {'init_z_correct,init_z_correct_sem,init_z_error,init_z_error_sem'};
 
 fig_2c_data = [initiation_time_noncom_correct_mean_gather',...
     initiation_time_noncom_correct_std_gather',initiation_time_noncom_incorrect_mean_gather',initiation_time_noncom_incorrect_std_gather'];
-
-save(data_file_name, 'initiation_time_noncom_correct_mean_gather',...
-    'initiation_time_noncom_correct_std_gather','initiation_time_noncom_incorrect_mean_gather','initiation_time_noncom_incorrect_std_gather');
 
 fid = fopen(data_file_name_csv, 'w') ;
 fprintf(fid, '%s,', header{1,1:end-1}) ;
@@ -284,15 +274,12 @@ dlmwrite(data_file_name_csv, fig_2c_data(1:end,:), '-append') ;
 
 
 %%% COM: 
-data_file_name=[figures_path 'Fig2_c2_' experiment_string '.mat'];
-data_file_name_csv=[figures_path 'Fig2_c2_' experiment_string '.txt'];
+
+data_file_name_csv=[figures_path 'response_times_com' experiment_string '.txt'];
 header = {'init_z_correct,init_z_correct_sem,init_z_error,init_z_error_sem'};
 
 fig_2c_data = [initiation_time_com_correct_mean_gather',...
     initiation_time_com_correct_std_gather',initiation_time_com_incorrect_mean_gather',initiation_time_com_incorrect_std_gather'];
-
-save(data_file_name, 'initiation_time_noncom_correct_mean_gather',...
-    'initiation_time_noncom_correct_std_gather','initiation_time_noncom_incorrect_mean_gather','initiation_time_noncom_incorrect_std_gather');
 
 fid = fopen(data_file_name_csv, 'w') ;
 fprintf(fid, '%s,', header{1,1:end-1}) ;
