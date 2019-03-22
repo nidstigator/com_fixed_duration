@@ -9,9 +9,12 @@ class DataReader:
         choices = pd.read_csv(choicesFilePath, sep=sep).set_index(self.index, drop=True)
         
         dynamicsFilePath = filePath % ('dynamics')       
-        dynamics = pd.read_csv(dynamicsFilePath, sep=sep, nrows=nrows, low_memory=True).set_index(self.index, drop=True)        
+        dynamics = pd.read_csv(dynamicsFilePath, sep=sep, nrows=nrows, low_memory=True).set_index(self.index, drop=True)      
+          
+        if IT_threshold is not None:
+            choices = choices[(choices['mouse_IT']<IT_threshold) & (choices['eye_IT']<IT_threshold)]
         
-        if rename_vars:
+        if rename_vars == True:
             choices = choices.rename(columns={
                     'mouse_IT': 'hand IT', 
                     'eye_IT': 'eye IT', 
@@ -26,10 +29,8 @@ class DataReader:
             choices.loc[~choices['is_correct'], 'choice'] = 'Error'
             choices.loc[choices['is_com'], 'type'] = 'CoM'
             choices.loc[~choices['is_com'], 'type'] = 'non-CoM'
-        
-        if IT_threshold:
-            choices = choices[(choices['hand IT']<IT_threshold) & (choices['eye IT']<IT_threshold)]
-        
+
+ 
         if stim_viewing:
             stimFilePath = filePath % ('stim_viewing')       
             stim_viewing = pd.read_csv(stimFilePath, sep=sep).set_index(self.index, drop=True)
