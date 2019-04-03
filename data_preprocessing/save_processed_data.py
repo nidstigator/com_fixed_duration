@@ -11,11 +11,11 @@ def save_processed_data(path):
     choices = dp.get_measures(choices, dynamics, stim_viewing)
     choices, dynamics, stim_viewing = dp.exclude_trials(choices, dynamics, stim_viewing)    
     
-    processed_path = path + 'processed/'
+    processed_path = os.path.join(path, 'processed')
     if not os.path.exists(processed_path):
         os.makedirs(processed_path)
-    choices.to_csv(processed_path + 'choices.txt', sep='\t', na_rep='nan', float_format='%.4f')
-    dynamics.to_csv(processed_path + 'dynamics.txt', sep='\t', na_rep='nan', float_format='%.4f')
-    stim_viewing.to_csv(processed_path + 'stim_viewing.txt', sep='\t', na_rep='nan', float_format='%.4f')
+    choices.to_csv(os.path.join(processed_path, 'choices.txt'), sep='\t', na_rep='nan', float_format='%.4f')
+    dynamics.to_csv(os.path.join(processed_path, 'dynamics.txt'), sep='\t', na_rep='nan', float_format='%.4f')
+    stim_viewing.to_csv(os.path.join(processed_path, 'stim_viewing.txt'), sep='\t', na_rep='nan', float_format='%.4f')
 
 save_processed_data(path='C:/Users/Arkady/Google Drive/data/CoM_fixed_duration')

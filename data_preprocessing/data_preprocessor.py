@@ -46,8 +46,10 @@ class DataPreprocessor:
     
     def get_measures(self, choices, dynamics, stim_viewing=None, model_data=False):
         # TODO: get rid of extra index added as extra columns somewhere along the way (subj_id.1, ...)
-        choices['is_correct'] = choices['direction'] == choices['response']        
-        choices.response_time /= 1000.0        
+        choices['is_correct'] = choices['direction'] == choices['response']
+        choices = choices.rename(columns={'response_time': 'trial_time'})        
+        choices.trial_time /= 1000.0
+        
         choices['xflips'] = dynamics.groupby(level=self.index).\
                                     apply(lambda traj: self.zero_cross_count(traj.mouse_vx.values))    
         choices = choices.join(dynamics.groupby(level=self.index).apply(self.get_maxd))
@@ -68,7 +70,7 @@ class DataPreprocessor:
 
         choices = choices.join(dynamics.groupby(level=self.index).apply(self.get_RT))
         
-        # initiation time during stimulus presentation is aligned at stimulus offset, so it is non-positive
+        # response time during stimulus presentation is aligned at stimulus offset, so it is non-positive
         if not stim_viewing is None:
             choices['stim_RT'] = stim_viewing.groupby(level=self.index).apply(self.get_stim_RT)
             # Comment next line for premature responses to have RT = 0 regardless hand movements during stimulus viewing   
@@ -80,10 +82,10 @@ class DataPreprocessor:
         # We can also z-score within participant AND coherence level, the results remain the same
         # ['subj_id', 'coherence']
         z = lambda c: (c-np.nanmean(c))/np.nanstd(c)
-        choices['RT_z'] = choices.RT.groupby(level='subj_id').apply(z)
+        choices['RT (z)'] = choices.RT.groupby(level='subj_id').apply(z)
         
-        if not model_data:
-            choices['RT_tertile'] = pd.qcut(choices['RT'], 3, labels=[1, 2, 3])
+        choices['RT tertile'] = pd.qcut(choices['RT'], 3, labels=[1, 2, 3])
+        choices['RT (z) tertile'] = pd.qcut(choices['RT (z)'], 3, labels=[1, 2, 3])
         
         return choices
     
