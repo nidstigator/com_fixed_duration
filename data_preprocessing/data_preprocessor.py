@@ -23,7 +23,7 @@ class DataPreprocessor:
         
     index = ['subj_id', 'session_no', 'block_no', 'trial_no']
     
-    def preprocess_data(self, choices, dynamics, resample=0, model_data=False):       
+    def preprocess_data(self, choices, dynamics, model_data=False):       
         if not model_data:            
             dynamics = self.set_origin_to_start(dynamics)                   
         
@@ -32,9 +32,6 @@ class DataPreprocessor:
         # flip trajectories for trials where direction == left
         # so that all correct trajectories go to the right
         dynamics.loc[choices.direction==180, ['mouse_x']] *= -1
-        
-        if resample:
-            dynamics = self.resample_trajectories(dynamics, n=resample)
         
         dc = derivative_calculator.DerivativeCalculator()
         dynamics = dc.append_diff(dynamics)
@@ -75,8 +72,7 @@ class DataPreprocessor:
             choices['stim_RT'] = stim_viewing.groupby(level=self.index).apply(self.get_stim_RT)
             # Comment next line for premature responses to have RT = 0 regardless hand movements during stimulus viewing   
             # TODO: even after this, there are too many zero hand IT's
-            # investigate the trajectories in Exp 2 where both RT = 0 and stim_RT = 0
-            # Most are in subject 624
+            # investigate the trajectories in where both RT = 0 and stim_RT = 0
             choices.loc[choices.RT==0, 'RT'] = choices.loc[choices.RT==0, 'stim_RT']
                                
         # We can also z-score within participant AND coherence level, the results remain the same
@@ -108,12 +104,6 @@ class DataPreprocessor:
         dynamics.loc[:,'timestamp'] = dynamics.timestamp.groupby(by=self.index). \
                                         transform(lambda t: (t-t.min()))/1000.0
         return dynamics
-
-    def resample_trajectories(self, dynamics, n_steps=100):
-        resampled_dynamics = dynamics.groupby(level=self.index).\
-                                    apply(lambda traj: self.resample_trajectory(traj, n_steps=n_steps))
-        resampled_dynamics.index = resampled_dynamics.index.droplevel(4)
-        return resampled_dynamics
         
     def get_maxd(self, traj):
         alpha = np.arctan((traj.mouse_y.iloc[-1]-traj.mouse_y.iloc[0])/ \
@@ -132,9 +122,13 @@ class DataPreprocessor:
         midline_d = mouse_x.min() if is_final_point_positive else mouse_x.max()
 
         idx_midline_d = (mouse_x == midline_d).nonzero()[0][-1]
+        
+        midline_d_t = traj.timestamp.values[idx_midline_d]
         midline_d_y = traj.mouse_y.values[idx_midline_d]
+        
         return pd.Series({'midline_d': abs(midline_d), 
                           'idx_midline_d': idx_midline_d,
+                          'midline_d_t': midline_d_t,
                           'midline_d_y': midline_d_y})
 
     def get_initial_decision(self, traj):    
@@ -183,19 +177,3 @@ class DataPreprocessor:
         else:
             RT = 0
         return RT
-    
-    def resample_trajectory(self, traj, n_steps):
-        # Make the sampling time intervals regular
-        n = np.arange(0, n_steps+1)
-        t_regular = np.linspace(traj.timestamp.min(), traj.timestamp.max(), n_steps+1)
-        mouse_x_interp = np.interp(t_regular, traj.timestamp.values, traj.mouse_x.values)
-        mouse_y_interp = np.interp(t_regular, traj.timestamp.values, traj.mouse_y.values)
-        eye_x_interp = np.interp(t_regular, traj.timestamp.values, traj.eye_x.values)
-        eye_y_interp = np.interp(t_regular, traj.timestamp.values, traj.eye_y.values)
-        pupil_size_interp = np.interp(t_regular, traj.timestamp.values, 
-                                      traj.pupil_size.values)
-        traj_interp = pd.DataFrame([n, t_regular, mouse_x_interp, mouse_y_interp, \
-                                    eye_x_interp, eye_y_interp, pupil_size_interp]).transpose()
-        traj_interp.columns = ['n', 'timestamp', 'mouse_x', 'mouse_y', 'eye_x', 'eye_y', 'pupil_size']
-#        traj_interp.index = range(1,n_steps+1)
-        return traj_interp
