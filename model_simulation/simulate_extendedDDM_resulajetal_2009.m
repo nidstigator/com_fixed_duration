@@ -154,18 +154,19 @@ initiation_time = 0;
 
 for t=1:trial_length-1
 %% In Resulaj et al. (2009): Basically, there is no drift
-% Instead, it's a diffusion process biased by mu0. 
+% Instead, it's a diffusion process biased by mu0.
+% The above might only be correct for dt=1.
     mu = (k * (coh/100) + mu0);
     
 %% Uncomment shut down the signal on 1st threshold crossing.
-%     mu = (t>(stim_onset/dt) & ~decision_module_crossed)*...
+%     mu = (t>(stim_onset/dt) & ~initial_decision_threshold_crossed)*...
 %     (k * (coh/100) + mu0);
 
 %% Only start accumulating signal+noise after stimulus onset.
     if(t<(stim_onset/dt))
         x(t+1) = x(t);
     else
-        x(t+1)= x(t) + sqrt(dt)* (mu + randn());
+        x(t+1)= x(t) + (dt*mu) + (sqrt(dt)* randn());
     end
     
 %% Check if initial threshold is reached: Correct
