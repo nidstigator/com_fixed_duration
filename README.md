@@ -3,14 +3,15 @@ Data analysis code for RDK experiment with eye- and hand-tracking, alongside a n
 
 Currently, the experimental analysis is summarized in three Jupyter notebooks:
 
-- [basic psychometrics](https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/psychometrics.ipynb)
-- [initiation times](https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/initiation_times.ipynb)
-- [statistical analysis](https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/r_stats.ipynb)
+- [basic psychometrics](https://github.com/nidstigator/com_fixed_duration/blob/master/analysis/psychometrics.ipynb)
+- [initiation times](https://github.com/nidstigator/com_fixed_duration/blob/master/analysis/initiation_times.ipynb)
+- [statistical analysis](https://github.com/nidstigator/com_fixed_duration/blob/master/analysis/r_stats.ipynb)
 
 The modelling results are summarised in:
 
-- [basic model fit](https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/model_exp_sidebyside.ipynb)
-- [modelling results](https://github.com/nidstigator/eyehand_model/blob/master/plotting_code/notebooks/modelling_results.ipynb)
+- [basic model fit](https://github.com/nidstigator/com_fixed_duration/blob/master/analysis/model_exp_sidebyside.ipynb)
+- [modelling results](https://github.com/nidstigator/com_fixed_duration/blob/master/analysis/modelling_results.ipynb)
+- [eDDM basic simulation](https://github.com/nidstigator/com_fixed_duration/blob/master/analysis/eDDM.ipynb)
 
 These notebooks are in active development, and more notebooks with more advanced analyses are on the way
 
