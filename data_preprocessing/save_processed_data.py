@@ -18,4 +18,4 @@ def save_processed_data(path):
     dynamics.to_csv(os.path.join(processed_path, 'dynamics.txt'), sep='\t', na_rep='nan', float_format='%.4f')
     stim_viewing.to_csv(os.path.join(processed_path, 'stim_viewing.txt'), sep='\t', na_rep='nan', float_format='%.4f')
 
-save_processed_data(path='C:/Users/Arkady/Google Drive/data/CoM_fixed_duration')
+save_processed_data(path='C:/Users/azgonnikov/Google Drive/data/CoM_fixed_duration')
