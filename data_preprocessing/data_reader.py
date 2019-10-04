@@ -9,9 +9,13 @@ class DataReader:
         filePath = os.path.join(path, '%s.txt')
         choicesFilePath = filePath % ('choices')
         choices = pd.read_csv(choicesFilePath, sep=sep).set_index(self.index, drop=True)
+        choices = choices.sort_index()
+#        choices = choices[~choices.is_practice]
         
         dynamicsFilePath = filePath % ('dynamics')       
         dynamics = pd.read_csv(dynamicsFilePath, sep=sep, nrows=nrows, low_memory=True).set_index(self.index, drop=True)
+        dynamics = dynamics.sort_index()
+#        dynamics = dynamics[~choices.is_practice]
         
         if rename_vars:
             choices.loc[choices['is_correct'], 'choice'] = 'Correct'
@@ -25,6 +29,8 @@ class DataReader:
         if stim_viewing:
             stimFilePath = filePath % ('stim_viewing')       
             stim_viewing = pd.read_csv(stimFilePath, sep=sep).set_index(self.index, drop=True)
+            stim_viewing = stim_viewing.sort_index()
+#            stim_viewing = stim_viewing[~choices.is_practice]
             
             return choices, dynamics, stim_viewing        
         else:

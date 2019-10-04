@@ -3,26 +3,12 @@ import numpy as np
 
 class DerivativeCalculator:   
     index = ['subj_id', 'session_no', 'block_no', 'trial_no']
-    
-    def append_diff(self, dynamics):        
-        names = {'mouse_x': 'mouse_dx', 
-                 'mouse_y': 'mouse_dy' , 
-                 'eye_x': 'eye_dx', 
-                 'eye_y': 'eye_dy'}      
-
-        for col_name, der_name in names.items():
-            dynamics[der_name] = np.concatenate(
-                    [self.get_diff(traj['timestamp'].values, traj[col_name].values) 
-                            for traj_id, traj in dynamics.groupby(level=self.index, group_keys=False)]
-                    )
-        return dynamics
-    
+        
     def append_derivatives(self, dynamics):
         names = {'mouse_x': 'mouse_vx', 
-                 'mouse_y': 'mouse_vy' , 
-                 'eye_x': 'eye_vx', 
-                 'eye_y': 'eye_vy'}      
+                 'mouse_y': 'mouse_vy'}      
 
+        # this assumes that entries in the dynamics dataframe are sorted in the ascending order according to its multiindex
         for col_name, der_name in names.items():
             dynamics[der_name] = np.concatenate(
                     [self.differentiate(traj['timestamp'].values, traj[col_name].values) 
@@ -33,9 +19,6 @@ class DerivativeCalculator:
                         for traj_id, traj in dynamics.groupby(level=self.index, group_keys=False)]
                 )
         return dynamics
-    
-    def get_diff(self, t, x):
-        return np.concatenate(([0.], np.diff(x)/np.diff(t)))
     
     def differentiate(self, t, x):
         # To be able to reasonably calculate derivatives at the end-points of the trajectories,

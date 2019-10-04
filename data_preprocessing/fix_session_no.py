@@ -32,13 +32,7 @@ def fix_choices_session_no(choices_directory, file_name, session_no = 1):
 
 path = 'C:/Users/azgonnikov/Google Drive/data/CoM_fixed_duration/'
 
-# First, fix 269's first session choice log, which mistakenly doesn't contain session_no column
-# no other problems in choice files
-#choices_directory = os.path.join(path, 'choices')
-#choices_file = '269_Sep_01_2016_17_07_18_choices.txt'
-#fix_choices_session_no(choices_directory, choices_file)
-
-# Second, add session_no to dynamics files. As a result of error in experiment software, session_no
+# Add session_no to dynamics files. As a result of error in experiment software, session_no
 # was not actually recorded to dynamics log files, although the headers contain 'session_no'. 
 # To fix this, we first remove 'session_no' from the header of each dynamics file, and then
 # insert new column to these files, one session at a time (change session_no from 1 to 4)

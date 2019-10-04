@@ -15,26 +15,18 @@ class DataPreprocessor:
     # threshold for distance travelled by mouse cursor (in pixels) during single movement
     # it is needed when calculating initation time
     RT_distance_threshold = 100
-    
-    resp_AOI_radius = 200
-    mouse_AOI_radius = 100
-    incorrect_AOI_centre = [-(x_lim/2-resp_AOI_radius), (y_lim-resp_AOI_radius)]
-    correct_AOI_centre = [(x_lim/2-resp_AOI_radius), (y_lim-resp_AOI_radius)] 
         
     index = ['subj_id', 'session_no', 'block_no', 'trial_no']
     
-    def preprocess_data(self, choices, dynamics, model_data=False):       
-        if not model_data:            
-            dynamics = self.set_origin_to_start(dynamics)                   
-        
+    def preprocess_data(self, choices, dynamics):
+        dynamics = self.set_origin_to_start(dynamics)   
         dynamics = self.shift_timeframe(dynamics)
         
         # flip trajectories for trials where direction == left
         # so that all correct trajectories go to the right
         dynamics.loc[choices.direction==180, ['mouse_x']] *= -1
         
-        dc = derivative_calculator.DerivativeCalculator()
-        dynamics = dc.append_diff(dynamics)
+        dc = derivative_calculator.DerivativeCalculator()        
         dynamics = dc.append_derivatives(dynamics)
         
         dynamics['mouse_v'] = np.sqrt(dynamics.mouse_vx**2 + dynamics.mouse_vy**2 )
@@ -43,6 +35,9 @@ class DataPreprocessor:
     
     def get_measures(self, choices, dynamics, stim_viewing=None, model_data=False):
         # TODO: get rid of extra index added as extra columns somewhere along the way (subj_id.1, ...)
+#        choices = choices[~choices.is_practice]
+#        dynamics = dynamics[~choices.is_practice]
+        
         choices['is_correct'] = choices['direction'] == choices['response']
         choices = choices.rename(columns={'response_time': 'trial_time'})        
         choices.trial_time /= 1000.0
@@ -67,7 +62,7 @@ class DataPreprocessor:
 
         choices = choices.join(dynamics.groupby(level=self.index).apply(self.get_RT))
         
-        # response time during stimulus presentation is aligned at stimulus offset, so it is non-positive
+#        # response time during stimulus presentation is aligned at stimulus offset, so it is non-positive
         if not stim_viewing is None:
             choices['stim_RT'] = stim_viewing.groupby(level=self.index).apply(self.get_stim_RT)
             # Comment next line for premature responses to have RT = 0 regardless hand movements during stimulus viewing   
@@ -85,10 +80,11 @@ class DataPreprocessor:
         
         return choices
     
-    def exclude_trials(self, choices, dynamics, stim_viewing):        
-        dynamics = dynamics[~choices.is_double_com]
-        stim_viewing = stim_viewing[~choices.is_double_com]
-        choices = choices[~choices.is_double_com]
+    def exclude_trials(self, choices, dynamics, stim_viewing):  
+        exclusion_criteria = (choices.is_double_com) | (choices.RT==np.inf)
+        dynamics = dynamics[~exclusion_criteria]
+        stim_viewing = stim_viewing[~exclusion_criteria]
+        choices = choices[~exclusion_criteria]
         
         return choices, dynamics, stim_viewing
     
@@ -146,8 +142,8 @@ class DataPreprocessor:
         is_previous_v_zero = True
     
         for i in np.arange(0,len(v)):
-            if v[i]!=0:
-                if is_previous_v_zero:
+            if v[i]!=0:                
+                if ((is_previous_v_zero) & (i < len(v)-1)) :
                     is_previous_v_zero = False
                     onsets += [i]
                 elif (i==len(v)-1):
@@ -155,13 +151,19 @@ class DataPreprocessor:
             elif (not is_previous_v_zero):
                 offsets += [i]
                 is_previous_v_zero = True
-
-        submovements = pd.DataFrame([{'on': onsets[i], 
-                 'off': offsets[i], 
-                 'on_t': traj.timestamp.values[onsets[i]],
-                 'distance':(traj.mouse_v[onsets[i]:offsets[i]]*
-                             traj.timestamp.diff()[onsets[i]:offsets[i]]).sum()}
-                for i in range(len(onsets))])
+        try:
+            submovements = pd.DataFrame([{'on': onsets[i], 
+                     'off': offsets[i], 
+                     'on_t': traj.timestamp.values[onsets[i]],
+                     # distance travelled by the mouse cursor for each submovement
+                     # is an integral of mouse velocity over time
+                     'distance':(traj.mouse_v[onsets[i]:offsets[i]]*
+                                 traj.timestamp.diff()[onsets[i]:offsets[i]]).sum()}
+                    for i in range(len(onsets))])
+        except(IndexError):
+            print('onsets', onsets)
+            print('offsets', offsets)            
+            
         if len(submovements):
             RT = submovements.loc[submovements.distance.ge(self.RT_distance_threshold ).idxmax()].on_t
         else:
