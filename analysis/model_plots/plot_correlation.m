@@ -8,7 +8,7 @@ global titles;
 global export;
 global figures_path;
 
-figures_path = '../figures_output/csv/';
+figures_path = '../../output/csv/';
 
 legends = true;
 titles = false;
