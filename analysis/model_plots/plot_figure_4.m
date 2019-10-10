@@ -58,7 +58,7 @@ traj_index = randi([1 size(non_com_correct_gather,1)]);
 x = non_com_correct_gather(traj_index,1:2:end); 
 fig_1_data = [linspace(1,4000,4000); x]';
 
-% write_to_file(data_file_name_csv, header, fig_1_data)
+write_to_file(data_file_name_csv, header, fig_1_data)
 
 
 %%% Begin write:
@@ -67,7 +67,7 @@ x = average_noncom(1:2:end);
 fig_1_data = [linspace(1,4000,4000); x]';
 data_file_name_csv=[figures_path 'x_traj_non_com_mean' experiment_string '.txt'];
 
-% write_to_file(data_file_name_csv, header, fig_1_data)
+write_to_file(data_file_name_csv, header, fig_1_data)
 
 
 

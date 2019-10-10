@@ -204,7 +204,7 @@ decision_module_crossed = false;
 gain_mc_lu = 1;     % Gain of input-output function (cf. Wong & Wang, 2006)
 tau_mc_lu = 150;    % Membrane time constant (cf. Wilson and Cowan, 1972)
 
-j0_mc_hu = 0.0055;   % (excitation) Coupling constant from HU to SM module
+j0_mc_hu = 0.002;   % (excitation) Coupling constant from HU to SM module
 j_mc_dec_lu = 10;    % Coupling from decision module to excitatory mc
 j_self_mc = 0;      % Self excitation constant for MC.
 %%%%%%%%%%%%
