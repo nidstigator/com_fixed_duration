@@ -1,7 +1,14 @@
+'''
+This script is used to merge individual data files from the 'raw' folder 
+into aggregate choices, dynamics, and stim_viewing data files ('merged_raw' folder)
+'''
+
 import os
 
+with open('data_path.txt') as f:
+    data_path = f.read()
+
 data_types = ['choices', 'dynamics', 'stim_viewing']
-data_path = 'C:/Users/azgonnikov/Google Drive/data/CoM_fixed_duration'
 
 in_folder = os.path.join(data_path, 'raw')
 out_folder = os.path.join(data_path, 'merged_raw')

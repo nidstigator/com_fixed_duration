@@ -25,7 +25,6 @@ class DataReader:
         choicesFilePath = filePath % ('choices')
         choices = pd.read_csv(choicesFilePath, sep=sep)
 
-
         n_blocks_per_subject = choices[choices.session_no==1].groupby('subj_id').apply(lambda c: c.block_no.max())
         subjects_to_fix = n_blocks_per_subject[n_blocks_per_subject>10].index.values
         

@@ -148,19 +148,15 @@ class DataPreprocessor:
             elif (not is_previous_v_zero):
                 offsets += [i]
                 is_previous_v_zero = True
-        try:
-            submovements = pd.DataFrame([{'on': onsets[i], 
-                     'off': offsets[i], 
-                     'on_t': traj.timestamp.values[onsets[i]],
-                     # distance travelled by the mouse cursor for each submovement
-                     # is an integral of mouse velocity over time
-                     'distance':(traj.mouse_v[onsets[i]:offsets[i]]*
-                                 traj.timestamp.diff()[onsets[i]:offsets[i]]).sum()}
-                    for i in range(len(onsets))])
-        except(IndexError):
-            print('onsets', onsets)
-            print('offsets', offsets)            
-            
+                
+        submovements = pd.DataFrame([{'on': onsets[i], 
+                                     'off': offsets[i], 
+                                     'on_t': traj.timestamp.values[onsets[i]],
+                                     # distance travelled by the mouse cursor for each submovement
+                                     # is an integral of mouse velocity over time
+                                     'distance':(traj.mouse_v[onsets[i]:offsets[i]]*
+                                                 traj.timestamp.diff()[onsets[i]:offsets[i]]).sum()}
+                                    for i in range(len(onsets))])
         if len(submovements):
             RT = submovements.loc[submovements.distance.ge(self.RT_distance_threshold ).idxmax()].on_t
         else:

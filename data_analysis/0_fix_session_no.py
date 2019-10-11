@@ -1,3 +1,11 @@
+'''
+This script was used to fix two data recording errors due to software bugs
+1. session_no missing from the choices file of one subject
+2. session_no data missing in some dynamics files 
+The script reads files from the '_corrupt' subfolder.
+The output of this scripts is stored in the 'raw' subfolder.
+'''
+
 import os
 import pandas as pd
 import re
@@ -30,13 +38,14 @@ def fix_choices_session_no(choices_directory, file_name, session_no = 1):
     choices.set_index(['subj_id', 'session_no', 'block_no', 'trial_no'], inplace=True, drop=True)
     choices.to_csv(os.path.join(file_path), sep='\t')
 
-path = 'C:/Users/azgonnikov/Google Drive/data/CoM_fixed_duration/'
+with open('data_path.txt') as f:
+    data_path = f.read()
 
 # Add session_no to dynamics files. As a result of error in experiment software, session_no
 # was not actually recorded to dynamics log files, although the headers contain 'session_no'. 
 # To fix this, we first remove 'session_no' from the header of each dynamics file, and then
 # insert new column to these files, one session at a time (change session_no from 1 to 4)
 for session in range(1,5):    
-    dynamics_directory = os.path.join(path, 'dresden_raw/dynamics_corrupt/session_%i' % (session))
+    dynamics_directory = os.path.join(data_path, 'raw/dynamics_corrupt/session_%i' % (session))
     fix_headers(dynamics_directory)
     fix_session_no(dynamics_directory, session_no = session)
