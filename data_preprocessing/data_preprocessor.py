@@ -34,10 +34,6 @@ class DataPreprocessor:
         return dynamics  
     
     def get_measures(self, choices, dynamics, stim_viewing=None, model_data=False):
-        # TODO: get rid of extra index added as extra columns somewhere along the way (subj_id.1, ...)
-#        choices = choices[~choices.is_practice]
-#        dynamics = dynamics[~choices.is_practice]
-        
         choices['is_correct'] = choices['direction'] == choices['response']
         choices = choices.rename(columns={'response_time': 'trial_time'})        
         choices.trial_time /= 1000.0
@@ -52,8 +48,9 @@ class DataPreprocessor:
         else:                
             choices['is_com'] = ((choices.midline_d > self.com_threshold_x) & \
                                     (choices.midline_d_y > self.com_threshold_y))
-        choices['com_type'] = pd.cut(choices.midline_d_y, 
-               bins=[0, self.late_com_y_threshold, self.y_lim], labels=['early', 'late'])
+        # threshold of 450ms is based on Gallivan et al 2018
+        choices['com_type'] = pd.cut(choices.midline_d_t, bins=[0, 0.45, choices.midline_d_t.max()], 
+                                       include_lowest=True, labels=['early', 'late'])
 
         choices['is_correct_init'] = choices['is_correct']
         choices.loc[choices.is_com, 'is_correct_init'] = (dynamics[choices.is_com]. \

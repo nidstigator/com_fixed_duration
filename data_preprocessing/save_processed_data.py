@@ -5,6 +5,7 @@ def save_processed_data(path):
     dp = data_preprocessor.DataPreprocessor()
     
     choices, dynamics, stim_viewing = dr.get_data(path=os.path.join(path, 'merged_raw'), stim_viewing=True)
+    
     dynamics = dp.preprocess_data(choices, dynamics)
     stim_viewing = dp.preprocess_data(choices, stim_viewing)
     
