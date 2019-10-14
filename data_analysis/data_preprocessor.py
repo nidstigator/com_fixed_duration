@@ -6,7 +6,7 @@ class DataPreprocessor:
     x_lim = 1920
     y_lim = 1080
     
-    com_threshold_x = 50
+    com_threshold_x = 100
     com_threshold_y = 100
 
     late_com_y_threshold = 700
@@ -33,7 +33,7 @@ class DataPreprocessor:
 
         return dynamics  
     
-    def get_measures(self, choices, dynamics, stim_viewing=None, model_data=False):
+    def get_measures(self, choices, dynamics, stim_viewing=None):
         choices['is_correct'] = choices['direction'] == choices['response']
         choices = choices.rename(columns={'response_time': 'trial_time'})        
         choices.trial_time /= 1000.0
@@ -43,10 +43,7 @@ class DataPreprocessor:
         choices = choices.join(dynamics.groupby(level=self.index).apply(self.get_maxd))
         choices = choices.join(dynamics.groupby(level=self.index).apply(self.get_midline_d))
 
-        if model_data:
-            choices['is_com'] = ((choices.midline_d > self.com_threshold_x))
-        else:                
-            choices['is_com'] = ((choices.midline_d > self.com_threshold_x) & \
+        choices['is_com'] = ((choices.midline_d > self.com_threshold_x) & \
                                     (choices.midline_d_y > self.com_threshold_y))
         # threshold of 450ms is based on Gallivan et al 2018
         choices['com_type'] = pd.cut(choices.midline_d_t, bins=[0, 0.45, choices.midline_d_t.max()], 
@@ -79,6 +76,11 @@ class DataPreprocessor:
     
     def exclude_trials(self, choices, dynamics, stim_viewing):  
         exclusion_criteria = (choices.is_double_com) | (choices.RT==np.inf)
+        print('%i trials excluded based on exclusion criterion (choices.is_double_com)' 
+              % (len(choices[(choices.is_double_com)])))
+        print('%i trials excluded based on exclusion criterion (choices.RT==np.inf)' 
+              % (len(choices[(choices.RT==np.inf)])))
+        
         dynamics = dynamics[~exclusion_criteria]
         stim_viewing = stim_viewing[~exclusion_criteria]
         choices = choices[~exclusion_criteria]
@@ -160,6 +162,7 @@ class DataPreprocessor:
         if len(submovements):
             RT = submovements.loc[submovements.distance.ge(self.RT_distance_threshold ).idxmax()].on_t
         else:
+            # if no submovements could be found, we set RT to infinity and discard these trials
             RT = np.inf
         return pd.Series({'RT': RT, 'motion_time': traj.timestamp.max()-RT})
 

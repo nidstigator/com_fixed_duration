@@ -11,7 +11,7 @@ class DataReader:
         data.loc[(data.subj_id.isin(subjects_to_fix)) & (data.session_no==1), 'block_no'] -= 1
         data = data[data.block_no>0]        
         
-        # these two subjects have exceedingly high number of CoMs (25% for subject 216, 16% for 747)
+        # these two subjects have exceedingly high number of CoMs (9% and 13%)
         # this suggests these CoMs are of different nature (e.g. just a particular way of responding)
         # print(choices.groupby('subj_id').is_com.mean())
         data = data[~data.subj_id.isin([216, 747])]
@@ -19,7 +19,7 @@ class DataReader:
         
         return data
     
-    def get_data(self, path, sep='\t', nrows=None, rename_vars=False, stim_viewing=False):
+    def get_data(self, path, sep='\t', rename_vars=False, stim_viewing=False):
         filePath = os.path.join(path, '%s.txt')
         
         choicesFilePath = filePath % ('choices')
@@ -31,9 +31,10 @@ class DataReader:
         choices = self.fix_data(choices, subjects_to_fix)
         
         dynamicsFilePath = filePath % ('dynamics')       
-        dynamics = pd.read_csv(dynamicsFilePath, sep=sep, nrows=nrows, low_memory=True)
+        dynamics = pd.read_csv(dynamicsFilePath, sep=sep)
         dynamics = self.fix_data(dynamics, subjects_to_fix)
                
+        # for displaying the binary variables is_com and is_correct on plots, it's better to rename them
         if rename_vars:
             choices.loc[choices['is_correct'], 'choice'] = 'Correct'
             choices.loc[~choices['is_correct'], 'choice'] = 'Error'
