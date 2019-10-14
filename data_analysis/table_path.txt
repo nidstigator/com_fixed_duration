@@ -1,1 +1,1 @@
-..\output\tables\
+../output/tables/
