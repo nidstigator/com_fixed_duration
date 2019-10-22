@@ -5,6 +5,7 @@ final_figures_compiled
 .idea
 .ipynb_checkpoints
 __pycache__
-data_path.txt
-figure_path.txt
-table_path.txt
+output
+data_analysis/figure_path.txt
+data_analysis/data_path.txt
+data_analysis/table_path.txt
