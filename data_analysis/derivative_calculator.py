@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 
 class DerivativeCalculator:   
@@ -14,10 +13,6 @@ class DerivativeCalculator:
                     [self.differentiate(traj['timestamp'].values, traj[col_name].values) 
                             for traj_id, traj in dynamics.groupby(level=self.index, group_keys=False)]
                     )
-        dynamics['mouse_ax'] = np.concatenate(
-                [self.differentiate_2(traj['timestamp'].values, traj['mouse_x'].values) 
-                        for traj_id, traj in dynamics.groupby(level=self.index, group_keys=False)]
-                )
         return dynamics
     
     def differentiate(self, t, x):
@@ -39,12 +34,3 @@ class DerivativeCalculator:
              5*(x[4:-2] - x[2:-4])/((t[4:-2]-t[2:-4])/2))/32
         
         return v
-    
-    def differentiate_2(self, t, x):
-        # TODO: account for non-constant time step
-        x = np.append(x[0]*np.ones(3), np.append(x, x[-1]*np.ones(3)))
-        timestep = np.median(np.diff(t))
-        t = np.append(t[0]-np.arange(1,4)*timestep, np.append(t, t[-1]+np.arange(1,4)*timestep))
-        a = (x[:-6] + 2*x[1:-5] - x[2:-4] - 4*x[3:-3] - x[4:-2] + 2*x[5:-1]+x[6:])\
-                /(16*timestep*timestep)
-        return a

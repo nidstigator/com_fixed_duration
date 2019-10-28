@@ -8,8 +8,6 @@ class DataPreprocessor:
     
     com_threshold_x = 100
     com_threshold_y = 100
-
-    late_com_y_threshold = 700
     
     # to determine exact response intiation,
     # threshold for distance travelled by mouse cursor (in pixels) during single movement
@@ -19,6 +17,7 @@ class DataPreprocessor:
     index = ['subj_id', 'session_no', 'block_no', 'trial_no']
     
     def preprocess_data(self, choices, dynamics):
+        dynamics = dynamics.drop(columns=['eye_x', 'eye_y', 'pupil_size'])
         dynamics = self.set_origin_to_start(dynamics)   
         dynamics = self.shift_timeframe(dynamics)
         
@@ -27,7 +26,7 @@ class DataPreprocessor:
         dynamics.loc[choices.direction==180, ['mouse_x']] *= -1
         
         dc = derivative_calculator.DerivativeCalculator()        
-        dynamics = dc.append_derivatives(dynamics)
+        dynamics = dc.append_derivatives(dynamics)        
         
         dynamics['mouse_v'] = np.sqrt(dynamics.mouse_vx**2 + dynamics.mouse_vy**2 )
 
@@ -56,16 +55,11 @@ class DataPreprocessor:
 
         choices = choices.join(dynamics.groupby(level=self.index).apply(self.get_RT))
         
-#        # response time during stimulus presentation is aligned at stimulus offset, so it is non-positive
+#        # stim_RT is aligned at stimulus offset, so it is non-positive
         if not stim_viewing is None:
             choices['stim_RT'] = stim_viewing.groupby(level=self.index).apply(self.get_stim_RT)
-            # Comment next line for premature responses to have RT = 0 regardless hand movements during stimulus viewing   
-            # TODO: even after this, there are too many zero hand IT's
-            # investigate the trajectories in where both RT = 0 and stim_RT = 0
             choices.loc[choices.RT==0, 'RT'] = choices.loc[choices.RT==0, 'stim_RT']
                                
-        # We can also z-score within participant AND coherence level, the results remain the same
-        # ['subj_id', 'coherence']
         z = lambda c: (c-np.nanmean(c))/np.nanstd(c)
         choices['RT (z)'] = choices.RT.groupby(level='subj_id').apply(z)
         
