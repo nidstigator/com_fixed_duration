@@ -5,7 +5,7 @@ This repository hosts the code behind the [PLoS Computational Biology paper](htt
 The data collection code requires 32-bit versions of Python 2.7, [PsychoPy 1.84.1](https://github.com/psychopy/psychopy/releases/tag/1.84.1), [PyGaze](https://github.com/esdalmaijer/PyGaze/tree/python27), [pyglet 1.2.4](http://pyglet.org/) (available from PyPI: `pip install pyglet==1.2.4`).
 
 ## Data analysis
-The main results of this work are presented in the [notebook reproducing all figures from the paper](https://github.com/nidstigator/com_fixed_duration/blob/master/data_analysis/paper_figures.ipynb). To prepare the data for this notebook, download it from [OSF](https://osf.io/y385t/) and run the preprocessing scripts (`0_fix_session_no.py`, `1_csv_merge.py`, `2_save_processed_data.py`).
+The main results of this work are presented in the [notebook reproducing all figures from the paper](https://github.com/nidstigator/com_fixed_duration/blob/master/data_analysis/paper_figures.ipynb). The notebook needs to be pointed to the data, which can be downloaded from [OSF](https://osf.io/y385t/). You can either download the processed data, or download the raw data and run the preprocessing scripts on it (`0_fix_session_no.py`, `1_csv_merge.py`, `2_save_processed_data.py`).
 
 Additional analyses of the data are summarized in three notebooks:
 
