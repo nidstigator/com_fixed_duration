@@ -18,13 +18,7 @@ To run the analysis code, you'd need Python 3.5+; the most convenient way of get
 [Statistical analysis](https://github.com/nidstigator/com_fixed_duration/blob/master/data_analysis/r_stats.ipynb) notebook reproduces the tables from the paper. To run it, you need [R](https://www.r-project.org/) and [IRKernel](https://irkernel.github.io/). 
 
 ## Model simulations
-The modelling results are summarised in:
-
-- [basic model fit](https://github.com/nidstigator/com_fixed_duration/blob/master/data_analysis/model_exp_sidebyside.ipynb)
-- [modelling results](https://github.com/nidstigator/com_fixed_duration/blob/master/data_analysis/modelling_results.ipynb)
-- [eDDM basic simulation](https://github.com/nidstigator/com_fixed_duration/blob/master/data_analysis/eDDM.ipynb)
-
-You need Matlab 2017+ in order to run the model simulations. Those simulation files might be ported to python at some stage.
+You need Matlab 2017+ in order to run the model simulations. [eDDM simulation](https://github.com/nidstigator/com_fixed_duration/blob/master/data_analysis/eDDM.ipynb) is run in Python though.
 
 If you're not familiar with Jupyter Notebooks, here is a good [starting guide](http://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/index.html)
 
