@@ -7,12 +7,6 @@ The data collection code requires 32-bit versions of Python 2.7, [PsychoPy 1.84.
 ## Data analysis
 The main results of this work are presented in the [notebook reproducing all figures from the paper](https://github.com/nidstigator/com_fixed_duration/blob/master/data_analysis/paper_figures.ipynb). The notebook needs to be pointed to the data, which can be downloaded from [OSF](https://osf.io/y385t/). You can either download the processed data, or download the raw data and run the preprocessing scripts on it (`0_fix_session_no.py`, `1_csv_merge.py`, `2_save_processed_data.py`).
 
-Additional analyses of the data are summarized in three notebooks:
-
-- [basic psychometrics](https://github.com/nidstigator/com_fixed_duration/blob/master/data_analysis/psychometrics.ipynb)
-- [response times](https://github.com/nidstigator/com_fixed_duration/blob/master/data_analysis/response_times.ipynb)
-- [statistical analysis](https://github.com/nidstigator/com_fixed_duration/blob/master/data_analysis/r_stats.ipynb)
-
 To run the analysis code, you'd need Python 3.5+; the most convenient way of getting it is to install the latest version of [Anaconda](https://www.anaconda.com/download/), which also includes all the dependencies:
 - Jupyter Notebook 1.0.0+
 - NumPy 1.12.1+
@@ -21,7 +15,7 @@ To run the analysis code, you'd need Python 3.5+; the most convenient way of get
 - matplotlib 2.0.2+
 - seaborn 0.7.1+
 
-You also need [R](https://www.r-project.org/) and [IRKernel](https://irkernel.github.io/) in order to run the stats notebook. 
+[Statistical analysis](https://github.com/nidstigator/com_fixed_duration/blob/master/data_analysis/r_stats.ipynb) notebook reproduces the tables from the paper. To run it, you need [R](https://www.r-project.org/) and [IRKernel](https://irkernel.github.io/). 
 
 ## Model simulations
 The modelling results are summarised in:
